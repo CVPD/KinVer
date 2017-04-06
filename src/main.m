@@ -19,6 +19,8 @@ createdDataDir = strcat(parentDir,'/','data');
 featuresFileNames = strcat(createdDataDir,'/',pairIdStrs,'-features.mat');
 mergedVggFileName = strcat(createdDataDir,'/','merged_vgg_',pairIdStrs,'.csv');
 mergedImagenetFileName = strcat(createdDataDir,'/','merged_imagenet_',pairIdStrs,'.csv');
+vggMatFileName = strcat(createdDataDir,'/','vgg_',pairIdStrs,'.mat');
+imagenetMatFileName = strcat(createdDataDir,'/','imagenet_',pairIdStrs,'.mat');
 numFeatures = 2;
 
 accuracyCell = {};
@@ -29,17 +31,19 @@ end
 
 %%% Feature extraction %%%
 for idx = 1:size(featuresFileNames,1)
-    calculateSaveVGGFeatures(imagePairsDirs(idx,:),convnetDir,featuresFileNames(idx,:));
-    cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
-    exportFeaturesToCSV(featuresFileNames(idx,:),metadataPairs(idx,:),...
-        mergedVggFileName(idx,:),mergedImagenetFileName(idx,:));
+%     calculateSaveVGGFeatures(imagePairsDirs(idx,:),convnetDir,featuresFileNames(idx,:));
+%     cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
+%     exportFeaturesToCSV(featuresFileNames(idx,:),metadataPairs(idx,:),...
+%         mergedVggFileName(idx,:),mergedImagenetFileName(idx,:));
+saveFeaturesInPairsMat(featuresFileNames(idx,:),metadataPairs(idx,:),...
+         vggMatFileName(idx,:),imagenetMatFileName(idx,:));
 end
 %%% End of feature extraction %%%
 
 %%% SVM Classification %%%
-for idx = 1:size(featuresFileNames,1)
-    accuracyCellArray{idx}.vggSVMAccuracy = classifierSVM(mergedVggFileName(idx,:));
-    accuracyCellArray{idx}.imagenetSVMAccuracy = classifierSVM(mergedImagenetFileName(idx,:));
-end
-celldisp(accuracyCellArray)
+% for idx = 1:size(featuresFileNames,1)
+%     accuracyCellArray{idx}.vggSVMAccuracy = classifierSVM(mergedVggFileName(idx,:));
+%     accuracyCellArray{idx}.imagenetSVMAccuracy = classifierSVM(mergedImagenetFileName(idx,:));
+% end
+% celldisp(accuracyCellArray)
 %%% End of SVM Classification %%%
