@@ -1,3 +1,5 @@
+%% Initialization
+clear all;
 %%% PC specific %%%
 % Define KinFaceW database path
 dbDir='C:\Users\oscar\Desktop\TFM\datasets\KinFaceW-I';
@@ -17,33 +19,28 @@ metadataPairs = strcat(metadataDir,'/',pairIdStrs,'_pairs.mat');
 parentDir = cd(cd('..'));
 createdDataDir = strcat(parentDir,'/','data');
 featuresFileNames = strcat(createdDataDir,'/',pairIdStrs,'-features.mat');
-mergedVggFileName = strcat(createdDataDir,'/','merged_vgg_',pairIdStrs,'.csv');
-mergedImagenetFileName = strcat(createdDataDir,'/','merged_imagenet_',pairIdStrs,'.csv');
+classificationFileName = strcat(createdDataDir,'/','classification_',pairIdStrs,'.mat');
+classificationMNRMLFileName = strcat(createdDataDir,'/','classification_MNRML_',pairIdStrs,'.mat');
 vggMatFileName = strcat(createdDataDir,'/','vgg_',pairIdStrs,'.mat');
 imagenetMatFileName = strcat(createdDataDir,'/','imagenet_',pairIdStrs,'.mat');
-numFeatures = 2;
 
-accuracyCell = {};
 for idx = 1:size(pairIdStrs,1)
-    accuracyCellArray{idx}.pair = pairIdStrs(idx,:);
+    featFileNamesCell{idx}{1} = vggMatFileName(idx,:);
+    featFileNamesCell{idx}{2} = imagenetMatFileName(idx,:);
 end
+
 %%% End of variables initialization %%%
 
-%%% Feature extraction %%%
+%% Feature extraction
 for idx = 1:size(featuresFileNames,1)
-%     calculateSaveVGGFeatures(imagePairsDirs(idx,:),convnetDir,featuresFileNames(idx,:));
-%     cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
-%     exportFeaturesToCSV(featuresFileNames(idx,:),metadataPairs(idx,:),...
-%         mergedVggFileName(idx,:),mergedImagenetFileName(idx,:));
-saveFeaturesInPairsMat(featuresFileNames(idx,:),metadataPairs(idx,:),...
-         vggMatFileName(idx,:),imagenetMatFileName(idx,:));
+ %   calculateSaveFeatures(imagePairsDirs(idx,:),convnetDir,featuresFileNames(idx,:));
+%    cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
+    arrangeDataInPairs(featuresFileNames(idx,:),metadataPairs(idx,:),...
+        vggMatFileName(idx,:),imagenetMatFileName(idx,:));
+    getClassificationData(featFileNamesCell{idx}, classificationFileName(idx,:))
+    mnrmlSpaceChange(classificationFileName(idx,:), ...
+       classificationMNRMLFileName(idx,:));
+   accuracy{idx} = pairSVMClassification(classificationFileName(idx,:)); 
+   accuracyMNRML{idx} = pairSVMClassification(classificationMNRMLFileName(idx,:));
 end
 %%% End of feature extraction %%%
-
-%%% SVM Classification %%%
-% for idx = 1:size(featuresFileNames,1)
-%     accuracyCellArray{idx}.vggSVMAccuracy = classifierSVM(mergedVggFileName(idx,:));
-%     accuracyCellArray{idx}.imagenetSVMAccuracy = classifierSVM(mergedImagenetFileName(idx,:));
-% end
-% celldisp(accuracyCellArray)
-%%% End of SVM Classification %%%

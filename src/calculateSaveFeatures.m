@@ -1,5 +1,5 @@
 
-function calculateSaveVGGFeatures(imageDir,convnetDir,outputFileName)
+function calculateSaveFeatures(imageDir,convnetDir,outputFileName)
 
 %%%%%%%%%%%%%%%% Initialisations %%%%%%%%%%%%%%%%
 
@@ -7,11 +7,11 @@ function calculateSaveVGGFeatures(imageDir,convnetDir,outputFileName)
 oldFolder = cd(convnetDir);
 run matlab/vl_setupnn;
 % Load vgg net
-vggNet = load('vgg-face.mat');
-vggNet = vl_simplenn_tidy(vggNet);
-% Load ImageNet
-imageNet = load('imagenet-vgg-f.mat');
-imageNet = vl_simplenn_tidy(imageNet);
+vggFace = load('vgg-face.mat');
+vggFace = vl_simplenn_tidy(vggFace);
+% Load vggF
+vggF = load('vgg-f.mat');
+vggF = vl_simplenn_tidy(vggF);
 cd(oldFolder);
 
 %%%%%%%%%%%%%%%% End of initialisations %%%%%%%%%%%%%%%%
@@ -32,26 +32,26 @@ for idx = 1:numImages
     % Pre-processing
     im = imread( imageFullPath );
     im_ = single(im);
-    im_ = imresize(im_, vggNet.meta.normalization.imageSize(1:2));
-    im_ = im_ - vggNet.meta.normalization.averageImage;
+    im_ = imresize(im_, vggFace.meta.normalization.imageSize(1:2));
+    im_ = im_ - vggFace.meta.normalization.averageImage;
     % Network pass
-    res = vl_simplenn(vggNet, im_);
+    res = vl_simplenn(vggFace, im_);
     % Store features of the layer previous to the classification
     data{idx}.vggFeat = gather(res(end-2).x);
 end
 
-% Save ImageNet features
+% Save vggF features
 for idx = 1:numImages
     imageFullPath = strcat(imageDir,'/',data{idx}.name);
     % Pre-processing
     im = imread( imageFullPath );
     im_ = single(im);
-    im_ = imresize(im_, imageNet.meta.normalization.imageSize(1:2));
-    im_ = im_ - imageNet.meta.normalization.averageImage;
+    im_ = imresize(im_, vggF.meta.normalization.imageSize(1:2));
+    im_ = im_ - vggF.meta.normalization.averageImage;
     % Network pass
-    res = vl_simplenn(imageNet, im_);
+    res = vl_simplenn(vggF, im_);
     % Store features of the layer previous to the classification
-    data{idx}.imagenetFeat = gather(res(end-2).x);
+    data{idx}.vggFFeat = gather(res(end-2).x);
 end
 
 save(outputFileName,'data');

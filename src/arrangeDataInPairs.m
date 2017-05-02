@@ -1,4 +1,4 @@
-function saveFeaturesInPairsMat(dataFile,metadataDir,VGGFileName,imagenetFileName)
+function arrangeDataInPairs(dataFile,metadataDir,VGGFileName,imagenetFileName)
 
 load(dataFile);
 load(metadataDir);
