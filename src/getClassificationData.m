@@ -58,5 +58,10 @@ for c = 1:nfold
         Xtsb{c} = [Xtsb{c}; ts_Xb{p}];
     end
 end
-save(destFileName, 'Xtra', 'Xtrb', 'Xtsa', 'Xtsb', 'tr_matches', 'ts_matches');
+%% Assign the same importance (beta value) to each feature
+for p = 1:K
+    beta{p} = 1/K;
+end
+save(destFileName, 'Xtra', 'Xtrb', 'Xtsa', 'Xtsb', 'tr_matches', ...
+        'ts_matches', 'beta');
 end

@@ -47,7 +47,7 @@ for c = 1:nfold
         % Apply PCA to all data
         Xtra{c}{p} = applyPCA(Xtra{c}{p},eigvec,sampleMean,Wdims);
         Xtrb{c}{p} = applyPCA(Xtrb{c}{p},eigvec,sampleMean,Wdims);
-                
+        
         Xtsa{c}{p} = applyPCA(Xtsa{c}{p},eigvec,sampleMean,Wdims);
         Xtsb{c}{p} = applyPCA(Xtsb{c}{p},eigvec,sampleMean,Wdims);
         
@@ -67,6 +67,18 @@ for c = 1:nfold
         Xtsb{c}{p} = Xtsb{c}{p} * W;
     end
 end
+
+%% Calculate mean of beta values per feature
+betaMean = repmat({0}, 1, K); % Initialize cell array to 0s
+for c = 1:nfold
+    for p = 1:K
+        betaMean{p} = betaMean{p}+beta{c}(p);
+    end
+end
+for p = 1:K
+    betaMean{p} = betaMean{p}/nfold;
+end
+beta = betaMean;
 
 save(outputFile, 'Xtra', 'Xtrb', 'Xtsa', 'Xtsb', 'tr_matches', 'ts_matches', 'beta');
 end

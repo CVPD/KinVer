@@ -17,28 +17,31 @@ numFeat = size(Xtrc{1},1);
 
 for feat = 1:numFeat
     allReal{feat} = [];
-    allPredicted{feat} = [];
+    allScore{feat} = [];
 end
 
 for fold = 1:numFolds
     for feat = 1:numFeat
         svmModel = trainLinearSVM(Xtrc{fold}{feat},tr_matches{fold});
-        prediction = predictSVM(svmModel,Xtsc{fold}{feat});
+        score = predictSVMScore(svmModel,Xtsc{fold}{feat});
         allReal{feat} = [allReal{feat};ts_matches{fold}];
-        allPredicted{feat} = [allPredicted{feat};prediction];
+        allScore{feat} = [allScore{feat};score];
     end
 end
 
-for feat = 1:numFeat
-    accuracy{feat} = calculateAccuracy(allReal{feat},allPredicted{feat});
-end
-
-% TODO weight probabilities of classifiers using the beta coeficient
-% TODO (to do so, make classifiers output a probabilty instead of the
-% class)
-% prob = 0;
-% for f = 1:numFeat
-%     prob = prob + beta{f}*svmFeat{f};
+%% Calculate accuracy a SVM per feature individually (comment to remove)
+% for feat = 1:numFeat
+%     accuracy{feat} = calculateAccuracy(allReal{feat},allPredicted{feat});
 % end
 
+%% Calculate the merged accuracy by weighing the reliability of each SVM 
+%(per feature) classifier using the beta coeficient. (comment to remove)
+allScoreMerged = zeros(length(allScore{1}),1);
+for f = 1:numFeat
+    allScoreMerged = allScoreMerged + beta{f}*allScore{f};
+end
+% If predicted class are probabilities, turn into class
+allScoreMerged(allScoreMerged>0) = 1;
+allScoreMerged(allScoreMerged<0) = 0;
+accuracy = calculateAccuracy(allReal{1},allScoreMerged);
 end

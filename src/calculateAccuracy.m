@@ -8,6 +8,13 @@
 % Output: accuracy; the accuracy of the classifier being tested
 function accuracy = calculateAccuracy(realClass,predictedClass)
 
+% If predicted class are probabilities, turn into class
+predictedClass(predictedClass>0.5) = 1;
+predictedClass(predictedClass<1) = 0;
+realClass = double(realClass);
+predictedClass = double(predictedClass);
+
+% Calculate accuracy using confusion matrix
 C = confusionmat(realClass,predictedClass);
 TP = C(1,1);
 TN = C(2,2);
