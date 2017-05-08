@@ -41,6 +41,6 @@ for idx = 1:size(featuresFileNames,1)
     mnrmlSpaceChange(classificationFileName(idx,:), ...
        classificationMNRMLFileName(idx,:));
    accuracy{idx} = pairSVMClassification(classificationFileName(idx,:)); 
-   %accuracyMNRML{idx} = pairSVMClassification(classificationMNRMLFileName(idx,:));
+   accuracyMNRML{idx} = pairSVMClassification(classificationMNRMLFileName(idx,:));
 end
 %%% End of feature extraction %%%

@@ -1,5 +1,5 @@
 % function getClassificationData(featFileNamesCell,destFileName)
-% 
+%
 % Gets the data ready to perform classification per fold.
 % Input: featFileNamesCell; a cell array that contains the name (full path)
 % of the files in which features are located. One name per cell.
@@ -57,11 +57,13 @@ for c = 1:nfold
         Xtsa{c} = [Xtsa{c}; ts_Xa{p}];
         Xtsb{c} = [Xtsb{c}; ts_Xb{p}];
     end
+    
+    % Assign the same importance (beta value) to each feature per fold
+    for p = 1:K
+        beta{c}(p) = 1/K;
+    end
 end
-%% Assign the same importance (beta value) to each feature
-for p = 1:K
-    beta{p} = 1/K;
-end
+
 save(destFileName, 'Xtra', 'Xtrb', 'Xtsa', 'Xtsb', 'tr_matches', ...
-        'ts_matches', 'beta');
+    'ts_matches', 'beta');
 end

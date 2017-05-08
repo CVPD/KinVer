@@ -28,7 +28,7 @@ K = size(Xtra{1},1);
 for c = 1:nfold
     
     % Display number of fold processing
-    txt = strcat('fold number', string(c));
+    txt = strcat('fold number', num2str(c));
     disp(txt)
     disp('')
     
@@ -41,7 +41,7 @@ for c = 1:nfold
     %% do PCA  on training data (comment this for loop to remove PCA)
     for p = 1:K
         % Calculate eigen vectors and values
-        [eigvec, eigval, ~, sampleMean] = PCA([Xtra{c}{p}; Xtrb{c}{p}]);
+        [eigvec, eigval, ~, sampleMean] = PCA([Xtra{c}{p}; Xtrb{c}{p}], Wdims);
         Wdims = size(eigvec, 2); % Calculate dimension of matrix
         
         % Apply PCA to all data
@@ -67,18 +67,6 @@ for c = 1:nfold
         Xtsb{c}{p} = Xtsb{c}{p} * W;
     end
 end
-
-%% Calculate mean of beta values per feature
-betaMean = repmat({0}, 1, K); % Initialize cell array to 0s
-for c = 1:nfold
-    for p = 1:K
-        betaMean{p} = betaMean{p}+beta{c}(p);
-    end
-end
-for p = 1:K
-    betaMean{p} = betaMean{p}/nfold;
-end
-beta = betaMean;
 
 save(outputFile, 'Xtra', 'Xtrb', 'Xtsa', 'Xtsb', 'tr_matches', 'ts_matches', 'beta');
 end
