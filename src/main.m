@@ -1,5 +1,5 @@
 %% Initialization
-clear all;
+%clear all;
 %%% PC specific %%%
 % Define KinFaceW database path
 dbDir='C:\Users\oscar\Desktop\TFM\datasets\KinFaceW-I';
@@ -37,10 +37,21 @@ for idx = 1:size(featuresFileNames,1)
 %    cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
     arrangeDataInPairs(featuresFileNames(idx,:),metadataPairs(idx,:),...
         vggMatFileName(idx,:),imagenetMatFileName(idx,:));
-    getClassificationData(featFileNamesCell{idx}, classificationFileName(idx,:))
-    mnrmlSpaceChange(classificationFileName(idx,:), ...
-       classificationMNRMLFileName(idx,:));
-   accuracy{idx} = pairSVMClassification(classificationFileName(idx,:)); 
-   accuracyMNRML{idx} = pairSVMClassification(classificationMNRMLFileName(idx,:));
+    
+    load(vggMatFileName(idx,:));
+    fea{1} = ux;
+    clear ux idxa idxb fold matches;
+    load(imagenetMatFileName(idx,:));
+    fea{2} = ux;
+    
+    T = 1;        % Iterations
+    knn = 5;      % k-nearest neighbors
+    Wdims = 100;  % low dimension
+    K = 2;
+    
+    [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+    
+    accuracy{idx} = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
+    accuracyMNRML{idx} = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
 end
 %%% End of feature extraction %%%

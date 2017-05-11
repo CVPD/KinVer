@@ -26,11 +26,9 @@ for c = 1:nfold
     
     % Merge parent and child 2 feature vectors into one (Train data)
     for p = 1:K
-        if iscell(fea{1}) % Features per fold
+        if iscell(fea{c}) % 
             X = fea{c}{p};
-        else
-            X = fea{p}; % Features (no folds)
-        end
+        X = fea{c}{p};
         tr_Xa = X(tr_idxa, :);                    % training data
         tr_Xb = X(tr_idxb, :);                    % training data
         tr_Xc = mergePairsInMatrix(tr_Xa, tr_Xb);
@@ -44,7 +42,7 @@ for c = 1:nfold
         if isreal(beta)
            betaVal = beta;
         else
-            betaVal = beta{c}(p);
+            betaVal = beta{fold}(p);
         end
         currentFoldScore = currentFoldScore + betaVal*currentFeatScore;
     end
