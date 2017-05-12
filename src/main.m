@@ -46,7 +46,7 @@ for idx = 1:size(featuresFileNames,1)
     
     T = 1;        % Iterations
     knn = 5;      % k-nearest neighbors
-    Wdims = 100;  % low dimension
+    Wdims = 40;  % low dimension
     K = 2;
     
     % Classification on original features

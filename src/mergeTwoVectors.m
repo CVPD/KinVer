@@ -7,7 +7,7 @@ function v3 = mergeTwoVectors(v1,v2)
 
 dividend = abs(v1-v2);
 divisor = v1+v2;
-v3 = dividend./divisor; % element wise division
+v3 = dividend;%./divisor; % element wise division
 v3(isnan(v3)) = 0; % Replace all NaN by 0s
 
 end

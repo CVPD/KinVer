@@ -43,7 +43,7 @@ for c = 1:nfold
         X = fea{p};
         tr_Xa = X(tr_idxa, :);                    % training data
         tr_Xb = X(tr_idxb, :);                    % training data
-        [eigvec, eigval, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
+        [eigvec, eigval, ~, sampleMean] = PCA([tr_Xa; tr_Xb], Wdims);
         Wdims = size(eigvec, 2);
         X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
         
