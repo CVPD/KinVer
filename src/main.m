@@ -53,12 +53,12 @@ for idx = 1:size(featuresFileNames,1)
     %accuracy{idx} = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
     
     % Classification on MNRML
-    %[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-    %accuracyMNRML{idx} = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
+    [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+    accuracyMNRML{idx} = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
     
     % Classification on NRML
-    projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-    accuracyNRML{idx} = pairSVMClassification(projFeaNRML, idxa, idxb, fold, matches, K, 1/K);
+    %projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+    %accuracyNRML{idx} = pairSVMClassification(projFeaNRML, idxa, idxb, fold, matches, K, 1/K);
     
 end
 %%% End of feature extraction %%%

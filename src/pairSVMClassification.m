@@ -39,7 +39,7 @@ for c = 1:nfold
         ts_Xb = X(ts_idxb, :);                 % testing data
         ts_Xc = mergePairsInMatrix(ts_Xa, ts_Xb);
         
-        svmModel = trainLinearSVM(tr_Xc,tr_matches);
+        svmModel = trainGaussianSVM(tr_Xc,tr_matches);
         currentFeatScore = predictSVMScore(svmModel,ts_Xc);
         if isreal(beta)
            betaVal = beta;
