@@ -8,9 +8,9 @@ for idx = 1:length(data)
     names{idx} = data{idx}.name;
 end
 
-% Vgg features to matrix
+% vgg-face features to matrix
 for idx = 1:length(data)
-    ux(idx,:) = data{idx}.vggFeat;
+    ux(idx,:) = data{idx}.vggFaceFeat;
 end
 
 % Pairs to idxs
@@ -35,9 +35,9 @@ save(VGGFileName, 'ux', 'matches', 'idxa', 'idxb', 'fold');
 
 clear ux matches idxa idxb fold;
 
-% Vgg features to matrix
+% vgg-f features to matrix
 for idx = 1:length(data)
-        ux(idx,:) = data{idx}.imagenetFeat;
+        ux(idx,:) = data{idx}.vggFFeat;
 end
 
 % Pairs to idxs

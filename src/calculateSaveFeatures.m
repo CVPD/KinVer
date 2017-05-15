@@ -37,7 +37,7 @@ for idx = 1:numImages
     % Network pass
     res = vl_simplenn(vggFace, im_);
     % Store features of the layer previous to the classification
-    data{idx}.vggFeat = gather(res(end-2).x);
+    data{idx}.vggFaceFeat = gather(res(end-2).x);
 end
 
 % Save vggF features
