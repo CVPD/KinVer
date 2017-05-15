@@ -32,7 +32,7 @@ end
 %%% End of variables initialization %%%
 
 %% Classification
-%numIt = 1;
+numIt = 1;
 %rangeIt = 5:5:100;
 %for Wdims = rangeIt
     T = 4;
@@ -63,7 +63,7 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, Wdims)
 K = 2;
-accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0;
+accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 %   ;calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
 %    cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
 arrangeDataInPairs(featuresFileName,metadataPair,...
