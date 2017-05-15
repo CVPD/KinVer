@@ -21,44 +21,51 @@ createdDataDir = strcat(parentDir,'/','data');
 featuresFileNames = strcat(createdDataDir,'/',pairIdStrs,'-features.mat');
 classificationFileName = strcat(createdDataDir,'/','classification_',pairIdStrs,'.mat');
 classificationMNRMLFileName = strcat(createdDataDir,'/','classification_MNRML_',pairIdStrs,'.mat');
-vggMatFileName = strcat(createdDataDir,'/','vgg_',pairIdStrs,'.mat');
-imagenetMatFileName = strcat(createdDataDir,'/','imagenet_',pairIdStrs,'.mat');
+vggMatFileNames = strcat(createdDataDir,'/','vgg_',pairIdStrs,'.mat');
+imagenetMatFileNames = strcat(createdDataDir,'/','imagenet_',pairIdStrs,'.mat');
 
-for idx = 1:size(pairIdStrs,1)
-    featFileNamesCell{idx}{1} = vggMatFileName(idx,:);
-    featFileNamesCell{idx}{2} = imagenetMatFileName(idx,:);
+for pairIdx = 1:size(pairIdStrs,1)
+    featFileNamesCell{pairIdx}{1} = vggMatFileNames(pairIdx,:);
+    featFileNamesCell{pairIdx}{2} = imagenetMatFileNames(pairIdx,:);
 end
 
 %%% End of variables initialization %%%
 
-%% Feature extraction
-for idx = 1:size(featuresFileNames,1)
- %   calculateSaveFeatures(imagePairsDirs(idx,:),convnetDir,featuresFileNames(idx,:));
-%    cosineROCPlot(featuresFileNames(idx,:),metadataPairs(idx,:),pairIdStrs(idx,:));
-    arrangeDataInPairs(featuresFileNames(idx,:),metadataPairs(idx,:),...
-        vggMatFileName(idx,:),imagenetMatFileName(idx,:));
-    
-    load(vggMatFileName(idx,:));
-    fea{1} = ux;
-    clear ux idxa idxb fold matches;
-    load(imagenetMatFileName(idx,:));
-    fea{2} = ux;
-    
-    T = 1;        % Iterations
-    knn = 5;      % k-nearest neighbors
-    Wdims = 40;  % low dimension
-    K = 2;
-    
-    % Classification on original features
-    %accuracy{idx} = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
-    
-    % Classification on MNRML
-    [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-    accuracyMNRML{idx} = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
-    
-    % Classification on NRML
-    %projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-    %accuracyNRML{idx} = pairSVMClassification(projFeaNRML, idxa, idxb, fold, matches, K, 1/K);
-    
+%% Classification
+parfor pairIdx = 1:size(featuresFileNames,1)
+    [accuracy{pairIdx},accuracyMNRML{pairIdx},accuracyNRML{pairIdx}] = ...
+        performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
+            featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
+            pairIdStrs(pairIdx,:), vggMatFileNames(pairIdx,:), ...
+            imagenetMatFileNames(pairIdx,:), ...
+            10, 10, 40);
 end
 %%% End of feature extraction %%%
+
+function [accuracy, accuracyMNRML, accuracyNRML] = performClassification(...
+    imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
+    pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, Wdims)
+K = 2;
+%   ;calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
+%    cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
+arrangeDataInPairs(featuresFileName,metadataPair,...
+    vggMatFileName,imagenetMatFileName);
+
+load(vggMatFileName);
+fea{1} = ux;
+clear ux idxa idxb fold matches;
+load(imagenetMatFileName);
+fea{2} = ux;
+
+% Classification on original features
+accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
+
+% Classification on MNRML
+[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+accuracyMNRML = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
+
+% Classification on NRML
+projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+accuracyNRML = pairSVMClassification(projFeaNRML, idxa, idxb, fold, matches, K, 1/K);
+
+end
