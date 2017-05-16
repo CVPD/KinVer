@@ -12,7 +12,7 @@
 % getClassificationData(featFileNamesCell, out);
 function getClassificationData(featFileNamesCell,destFileName)
 
-K = length(featFileNamesCell);
+K = size(featFileNamesCell,2);
 
 for idx = 1:length(featFileNamesCell)
     clear ux matches idxa idxb fold;
