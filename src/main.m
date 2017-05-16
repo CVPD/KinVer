@@ -2,7 +2,7 @@
 %clear all;
 %%% PC specific %%%
 % Define KinFaceW database path
-dbDir='C:\Users\oscar\Desktop\TFM\datasets\KinFaceW-II';
+dbDir='C:\Users\oscar\Desktop\TFM\datasets\KinFaceW-I';
 % Define matconvnet path
 convnetDir = 'C:\Users\oscar\Desktop\TFM\matconvnet-1.0-beta23';
 %%% End PC specific %%%
@@ -30,9 +30,6 @@ end
 %%% End of variables initialization %%%
 
 %% Classification
-numIt = 1;
-%rangeIt = 5:5:100;
-%for Wdims = rangeIt
 T = 4;
 knn = 6;
 Wdims = 30;
@@ -46,14 +43,8 @@ parfor pairIdx = 1:size(featuresFileNames,1)
         vggFFileNames(pairIdx,:), ...
         T, knn, Wdims);
 end
-meanAccuracy(numIt) = mean(accuracyMNRML);
-numIt = numIt + 1;
-%end
-%meanAccuracy = meanAccuracy*100;
-%p = plot(rangeIt,meanAccuracy);
-%xlabel('Feature dimension');
-%ylabel('Verification accuracy (%)');
-%set(p,'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
+meanAccuracy = mean(accuracyMNRML);
+
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
@@ -62,7 +53,7 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
     pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, Wdims)
 K = 2;
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
-% calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
+calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
 % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
 arrangeDataInPairs(featuresFileName,metadataPair,...
     vggMatFileName,imagenetMatFileName);
