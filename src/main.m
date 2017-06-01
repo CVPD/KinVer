@@ -53,10 +53,10 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
     pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, Wdims)
 K = 2;
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
-calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
+%calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
 % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
-arrangeDataInPairs(featuresFileName,metadataPair,...
-    vggMatFileName,imagenetMatFileName);
+%arrangeDataInPairs(featuresFileName,metadataPair,...
+%    vggMatFileName,imagenetMatFileName);
 
 load(vggMatFileName);
 fea{1} = ux;
@@ -71,10 +71,12 @@ accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K
 
 % Classification on MNRML
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-accuracyMNRML = pairSVMClassification(projFea, idxa, idxb, fold, matches, K, projBeta);
+[mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
+accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta);
 
 % Classification on NRML
 projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-accuracyNRML = pairSVMClassification(projFeaNRML, idxa, idxb, fold, matches, K, 1/K);
+[mergedFeaTrNRML, mergedFeaTsNRML]= convertEachPairIntoIndividual(projFeaNRML, idxa, idxb, fold, K);
+accuracyNRML = mergedSVMClassification(mergedFeaTrNRML, mergedFeaTsNRML, fold, matches, K, 1/K);
 
 end
