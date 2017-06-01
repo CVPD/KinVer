@@ -9,7 +9,7 @@
 % inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
 % outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
 % mnrmlSpaceChange(inputFile,outputFile);
-function [mergedFeaTr, mergedFeaTs] = ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K)
+function [mergedFeaTr, mergedFeaTs] = ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2)
 
 disp('LDE projection started. Folds: ')
 
@@ -31,8 +31,6 @@ for c = 1:nfold
     
     % Perform LDE projection
     for p = 1:K
-        K1 = 4;
-        K2 = 6;
         mergedFeaTr{c}{p} = transpose(mergedFeaTr{c}{p});
         mergedFeaTs{c}{p} = transpose(mergedFeaTs{c}{p});
         tr_matches = tr_matches';
