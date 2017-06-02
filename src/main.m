@@ -50,8 +50,8 @@ for perc = range
     idx = idx+1;
 end
 plot(range,meanAccuracy);
-title('Accuracy/percentage of eig value');
-xlabel('% of eigval accomulated');
+title('Accuracy/accumulated eig value from total');
+xlabel('accumulated eigvalue');
 ylabel('Accuracy');
 %%% End of classification %%%
 
