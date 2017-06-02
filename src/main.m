@@ -34,11 +34,13 @@ T = 4;
 knn = 6;
 idx = 1;
 range = 0.1:0.05:1;
-perc = 0.5;
+perc = 0.65;
 %for perc = range
-for K1 = 2:10
-    for K2 = 2:10
-        parfor pairIdx = 1:size(featuresFileNames,1)
+%for K1 = 2:10
+%    for K2 = 2:10
+K1 = 5;
+K2 = 5;
+    parfor pairIdx = 1:size(featuresFileNames,1)
             
             [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
                 accuracyPerFeat(pairIdx,:)] = ...
@@ -51,8 +53,8 @@ for K1 = 2:10
         end
         meanAccuracy(idx) = mean(accuracyMNRML);
         idx = idx+1;        
-    end
-end
+%    end
+%end
 %end
 %plot(range,meanAccuracy);
 %title('Accuracy/accumulated eig value from total');
