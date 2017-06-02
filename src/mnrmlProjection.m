@@ -9,7 +9,8 @@
 % inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
 % outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
 % mnrmlSpaceChange(inputFile,outputFile);
-function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn)
+function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+    matches, K, T, knn, eigValPerc)
 
 disp('mnrml projection started. Folds: ')
 
@@ -39,7 +40,7 @@ for c = 1:nfold
     ts_matches = matches(testMask);
     
     %% do PCA  on training data
-    Wdims = calculateWdims(0.95, c, fea, idxa, idxb, fold, K);
+    Wdims = calculateWdims(eigValPerc, c, fea, idxa, idxb, fold, K);
     for p = 1:K
         X = fea{p};
         tr_Xa = X(tr_idxa, :);                    % training data
