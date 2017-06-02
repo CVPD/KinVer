@@ -34,31 +34,37 @@ T = 4;
 knn = 6;
 idx = 1;
 range = 0.1:0.05:1;
-%perc = 0.95;
-for perc = range
-    parfor pairIdx = 1:size(featuresFileNames,1)
-
-        [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-            accuracyPerFeat(pairIdx,:)] = ...
-            performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
-            featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
-            pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
-            vggFFileNames(pairIdx,:), ...
-            T, knn, perc);
+perc = 0.5;
+%for perc = range
+for K1 = 2:10
+    for K2 = 2:10
+        parfor pairIdx = 1:size(featuresFileNames,1)
+            
+            [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
+                accuracyPerFeat(pairIdx,:)] = ...
+                performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
+                featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
+                pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
+                vggFFileNames(pairIdx,:), ...
+                T, knn, perc, K1, K2);
+            
+        end
+        meanAccuracy(idx) = mean(accuracyMNRML);
+        idx = idx+1;        
     end
-    meanAccuracy(idx) = mean(accuracyMNRML);
-    idx = idx+1;
 end
-plot(range,meanAccuracy);
-title('Accuracy/accumulated eig value from total');
-xlabel('accumulated eigvalue');
-ylabel('Accuracy');
+%end
+%plot(range,meanAccuracy);
+%title('Accuracy/accumulated eig value from total');
+%xlabel('accumulated eigvalue');
+%ylabel('Accuracy');
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
     performClassification(...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
-    pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, eigValPerc)
+    pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, eigValPerc, ...
+    K1, K2)
 K = 2;
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 %calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
@@ -78,11 +84,9 @@ fea{2} = ux;
 %accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
 
 % Classification on MNRML
-K1 = 5;
-K2 = 10;
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, eigValPerc);
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
-%[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
+[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta);
 
 % Classification on NRML
