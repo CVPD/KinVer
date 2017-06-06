@@ -9,10 +9,11 @@
 % inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
 % outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
 % mnrmlSpaceChange(inputFile,outputFile);
-function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims)
+function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+    matches, K, T, knn, eigValPerc, wdims)
 
 disp('mnrml projection started. Folds: ')
-    
+
 addpath('external/NRML/nrml');
 
 un = unique(fold);
@@ -22,8 +23,13 @@ nfold = length(un);
 t_sim = [];
 t_ts_matches = [];
 t_acc = zeros(nfold, 1);
+if wdims == -1
+    Wdims = calculateWdims(eigValPerc, fea, idxa, idxb, fold, K);
+else
+    Wdims = wdims;
+end
 for c = 1:nfold
-
+    
     % Display number of fold processing
     txt = strcat('fold number', num2str(c));
     disp(txt)
@@ -43,8 +49,7 @@ for c = 1:nfold
         X = fea{p};
         tr_Xa = X(tr_idxa, :);                    % training data
         tr_Xb = X(tr_idxb, :);                    % training data
-        [eigvec, eigval, ~, sampleMean] = PCA([tr_Xa; tr_Xb], Wdims);
-        Wdims = size(eigvec, 2);
+        [eigvec, ~, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
         X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
         
         N = size(X, 1);
@@ -70,4 +75,39 @@ end
 
 disp('mnrml projection finished')
 
+
+end
+
+% Returns the maximum value of Wdims (the value that holds percEigVal information
+% of the feature that needs the biggest information) of all the folds
+function maxWdims = calculateWdims(percEigVal, fea, idxa, idxb, fold, K)
+
+un = unique(fold);
+nfold = length(un);
+
+maxWdims = 0;
+
+for c = 1:nfold
+    trainMask = fold ~= c;
+    tr_idxa = idxa(trainMask);
+    tr_idxb = idxb(trainMask);
+    
+    for p = 1:K
+        X = fea{p};
+        tr_Xa = X(tr_idxa, :);                    % training data
+        tr_Xb = X(tr_idxb, :);                    % training data
+        [~, eigval, ~, ~] = PCA([tr_Xa; tr_Xb]);
+        totalEig = sum(eigval);
+        accum = 0;
+        idx = 0;
+        while accum/totalEig < percEigVal
+            idx = idx + 1;
+            accum = accum + eigval(idx);
+        end
+        Wdims = idx;
+        if Wdims > maxWdims
+            maxWdims = Wdims;
+        end
+    end
+end
 end
