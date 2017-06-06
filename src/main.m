@@ -33,17 +33,17 @@ end
 T = 4;
 knn = 6;
 idx = 1;
-range = 0.1:0.05:1;
-perc = 0.65;
-%for perc = range
+range = 0.1:0.1:1;
+%perc = 0.65;
+for perc = range
 %for K1 = 2:10
 %    for K2 = 2:10
 K1 = 5;
 K2 = 5;
-    parfor pairIdx = 1:size(featuresFileNames,1)
+    for pairIdx = 1:size(featuresFileNames,1)
             
             [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-                accuracyPerFeat(pairIdx,:)] = ...
+                accuracyPerFeat(pairIdx,:), numEigVals(idx)] = ...
                 performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
                 featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
                 pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
@@ -55,20 +55,21 @@ K2 = 5;
         idx = idx+1;        
 %    end
 %end
-%end
-%plot(range,meanAccuracy);
-%title('Accuracy/accumulated eig value from total');
-%xlabel('accumulated eigvalue');
-%ylabel('Accuracy');
+end
+plot(numEigVals,meanAccuracy);
+title('Accuracy/Number eigenvalues');
+xlabel('Number eigenvalues');
+ylabel('Accuracy');
 %%% End of classification %%%
 
-function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
-    performClassification(...
+function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
+    numEigvals] = performClassification(...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, eigValPerc, ...
     K1, K2)
 K = 2;
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
+numEigvals = 0;
 %calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
 % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
 %arrangeDataInPairs(featuresFileName,metadataPair,...
@@ -87,6 +88,7 @@ fea{2} = ux;
 
 % Classification on MNRML
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, eigValPerc);
+numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta);

@@ -23,6 +23,7 @@ nfold = length(un);
 t_sim = [];
 t_ts_matches = [];
 t_acc = zeros(nfold, 1);
+Wdims = calculateWdims(eigValPerc, fea, idxa, idxb, fold, K);
 for c = 1:nfold
     
     % Display number of fold processing
@@ -40,7 +41,6 @@ for c = 1:nfold
     ts_matches = matches(testMask);
     
     %% do PCA  on training data
-    Wdims = calculateWdims(eigValPerc, c, fea, idxa, idxb, fold, K);
     for p = 1:K
         X = fea{p};
         tr_Xa = X(tr_idxa, :);                    % training data
@@ -75,29 +75,35 @@ disp('mnrml projection finished')
 end
 
 % Returns the maximum value of Wdims (the value that holds percEigVal information
-% of the feature that needs the biggest information) 
-function maxWdims = calculateWdims(percEigVal, c, fea, idxa, idxb, fold, K)
+% of the feature that needs the biggest information) of all the folds
+function maxWdims = calculateWdims(percEigVal, fea, idxa, idxb, fold, K)
+
+un = unique(fold);
+nfold = length(un);
+
 maxWdims = 0;
 
-trainMask = fold ~= c;
-tr_idxa = idxa(trainMask);
-tr_idxb = idxb(trainMask);
-
-for p = 1:K
-    X = fea{p};
-    tr_Xa = X(tr_idxa, :);                    % training data
-    tr_Xb = X(tr_idxb, :);                    % training data
-    [~, eigval, ~, ~] = PCA([tr_Xa; tr_Xb]);
-    totalEig = sum(eigval);
-    accum = 0;
-    idx = 0;
-    while accum/totalEig < percEigVal
-        idx = idx + 1;
-        accum = accum + eigval(idx);
-    end
-    Wdims = idx;
-    if Wdims > maxWdims
-        maxWdims = Wdims;
+for c = 1:nfold
+    trainMask = fold ~= c;
+    tr_idxa = idxa(trainMask);
+    tr_idxb = idxb(trainMask);
+    
+    for p = 1:K
+        X = fea{p};
+        tr_Xa = X(tr_idxa, :);                    % training data
+        tr_Xb = X(tr_idxb, :);                    % training data
+        [~, eigval, ~, ~] = PCA([tr_Xa; tr_Xb]);
+        totalEig = sum(eigval);
+        accum = 0;
+        idx = 0;
+        while accum/totalEig < percEigVal
+            idx = idx + 1;
+            accum = accum + eigval(idx);
+        end
+        Wdims = idx;
+        if Wdims > maxWdims
+            maxWdims = Wdims;
+        end
     end
 end
 end
