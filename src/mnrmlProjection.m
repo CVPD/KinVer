@@ -10,7 +10,7 @@
 % outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
 % mnrmlSpaceChange(inputFile,outputFile);
 function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
-    matches, K, T, knn, eigValPerc)
+    matches, K, T, knn, eigValPerc, wdims)
 
 disp('mnrml projection started. Folds: ')
 
@@ -23,7 +23,11 @@ nfold = length(un);
 t_sim = [];
 t_ts_matches = [];
 t_acc = zeros(nfold, 1);
-Wdims = calculateWdims(eigValPerc, fea, idxa, idxb, fold, K);
+if wdims == -1
+    Wdims = calculateWdims(eigValPerc, fea, idxa, idxb, fold, K);
+else
+    Wdims = wdims;
+end
 for c = 1:nfold
     
     % Display number of fold processing

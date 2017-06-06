@@ -33,40 +33,41 @@ end
 T = 4;
 knn = 6;
 idx = 1;
-range = 0.1:0.1:1;
-%perc = 0.65;
-for perc = range
-%for K1 = 2:10
+%range = 17:38;%20:40;
+perc = 0;
+wdims = 27;
+%for wdims = range
+%for K1 = 4:6
 %    for K2 = 2:10
-K1 = 5;
-K2 = 5;
+K1 = 6;
+K2 = 2;
     for pairIdx = 1:size(featuresFileNames,1)
             
             [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-                accuracyPerFeat(pairIdx,:), numEigVals(idx)] = ...
+                accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx)] = ...
                 performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
                 featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
                 pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
                 vggFFileNames(pairIdx,:), ...
-                T, knn, perc, K1, K2);
+                T, knn, perc, K1, K2, wdims);
             
         end
         meanAccuracy(idx) = mean(accuracyMNRML);
         idx = idx+1;        
 %    end
 %end
-end
-plot(numEigVals,meanAccuracy);
-title('Accuracy/Number eigenvalues');
-xlabel('Number eigenvalues');
-ylabel('Accuracy');
+%end
+%plot(mean(numEigVals),meanAccuracy);
+%title('Accuracy/Number eigenvalues');
+%xlabel('Number eigenvalues');
+%ylabel('Accuracy');
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
     numEigvals] = performClassification(...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, eigValPerc, ...
-    K1, K2)
+    K1, K2, wdims)
 K = 2;
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 numEigvals = 0;
@@ -87,7 +88,8 @@ fea{2} = ux;
 %accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
 
 % Classification on MNRML
-[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, eigValPerc);
+[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+    matches, K, T, knn, eigValPerc, wdims);
 numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
