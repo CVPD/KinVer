@@ -45,20 +45,29 @@ wdims = 27;
 %    for K2 = 2:10
 K1 = 5;
 K2 = 8;
+range = 5:5:wdims;%20:40;
+
+% Add wdims if it is not in the range
+if isempty(find(range==wdims))
+    range(length(range)+1) = wdims;
+end
+
+for sizeSVM = range
     for pairIdx = 1:size(featuresFileNames,1)
-            
-            [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-                accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx)] = ...
-                performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
-                featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
-                pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
-                vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
-                HOGFileNames(pairIdx,:), ...
-                T, knn, perc, K1, K2, wdims);
-            
-        end
-        meanAccuracy(idx) = mean(accuracyMNRML);
-        idx = idx+1;        
+        
+        [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
+            accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx)] = ...
+            performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
+            featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
+            pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
+            vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
+            HOGFileNames(pairIdx,:), ...
+            T, knn, perc, K1, K2, wdims,sizeSVM);
+        
+    end
+    meanAccuracy(idx) = mean(accuracyMNRML);
+    idx = idx+1;
+end
 %    end
 %end
 %end
@@ -66,6 +75,10 @@ K2 = 8;
 %title('Accuracy/Number eigenvalues');
 %xlabel('Number eigenvalues');
 %ylabel('Accuracy');
+plot(range,meanAccuracy);
+title('Accuracy/LDE vector dim');
+xlabel('LDE vector dim');
+ylabel('Accuracy');
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
@@ -73,7 +86,7 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, ...
     LBPMatFileName, HOGMatFileName, T, knn, eigValPerc, ...
-    K1, K2, wdims)
+    K1, K2, wdims, sizeSVM)
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 numEigvals = 0;
 %calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
@@ -92,7 +105,7 @@ fea{3} = ux;
 clear ux idxa idxb fold matches;
 load(HOGMatFileName);
 fea{4} = ux;
-K = 4; 
+K = 4;
 % Classification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
@@ -104,7 +117,7 @@ accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K
 numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
-accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta);
+accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta, sizeSVM);
 
 % Classification on NRML
 %Wdims = 30;

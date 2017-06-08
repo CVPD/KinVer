@@ -2,7 +2,7 @@
 % inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms_noW.mat';
 % SVMClassification(inputFile);
 
-function accuracy = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, beta)
+function accuracy = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, beta, sizeSVM)
 
 un = unique(fold);
 nfold = length(un);
@@ -22,8 +22,13 @@ for c = 1:nfold
     
     % Perform SVM classification
     for p = 1:K
-        svmModel = trainGaussianSVM(mergedFeaTr{c}{p},tr_matches);
-        currentFeatScore = predictSVMScore(svmModel,mergedFeaTs{c}{p});
+        if sizeSVM == -1
+            svmModel = trainGaussianSVM(mergedFeaTr{c}{p},tr_matches);
+            currentFeatScore = predictSVMScore(svmModel,mergedFeaTs{c}{p});
+        else
+            svmModel = trainGaussianSVM(mergedFeaTr{c}{p}(:,1:sizeSVM),tr_matches);
+            currentFeatScore = predictSVMScore(svmModel,mergedFeaTs{c}{p}(:,1:sizeSVM));
+        end
         if isreal(beta)
            betaVal = beta;
         else
