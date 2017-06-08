@@ -43,8 +43,8 @@ wdims = 27;
 %for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
-K1 = 6;
-K2 = 2;
+K1 = 5;
+K2 = 8;
     for pairIdx = 1:size(featuresFileNames,1)
             
             [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
