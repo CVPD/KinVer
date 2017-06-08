@@ -29,11 +29,13 @@ for c = 1:nfold
     testMask = fold == c;
     tr_matches = matches(trainMask);
     
+    tr_matches = tr_matches';
+    
     % Perform LDE projection
     for p = 1:K
         mergedFeaTr{c}{p} = transpose(mergedFeaTr{c}{p});
         mergedFeaTs{c}{p} = transpose(mergedFeaTs{c}{p});
-        tr_matches = tr_matches';
+        
         
         [vec val Ww Wb Lb Lw] = LDE_K1K2(mergedFeaTr{c}{p},tr_matches,K1,K2);
         mergedFeaTr{c}{p} = vec' * mergedFeaTr{c}{p};

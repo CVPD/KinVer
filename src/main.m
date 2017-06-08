@@ -21,10 +21,14 @@ createdDataDir = strcat(parentDir,'/','data');
 featuresFileNames = strcat(createdDataDir,'/',pairIdStrs,'-features.mat');
 vggFaceFileNames = strcat(createdDataDir,'/','vggFace_',pairIdStrs,'.mat');
 vggFFileNames = strcat(createdDataDir,'/','vggF_',pairIdStrs,'.mat');
+LBPFileNames = strcat(createdDataDir,'/','LBP_',pairIdStrs,'.mat');
+HOGFileNames = strcat(createdDataDir,'/','HOG_',pairIdStrs,'.mat');
 
 for pairIdx = 1:size(pairIdStrs,1)
     featFileNamesCell{pairIdx}{1} = vggFaceFileNames(pairIdx,:);
     featFileNamesCell{pairIdx}{2} = vggFFileNames(pairIdx,:);
+    featFileNamesCell{pairIdx}{3} = LBPFileNames(pairIdx,:);
+    featFileNamesCell{pairIdx}{4} = HOGFileNames(pairIdx,:);
 end
 
 %%% End of variables initialization %%%
@@ -32,54 +36,80 @@ end
 %% Classification
 T = 4;
 knn = 6;
-Wdims = 30;
-parfor pairIdx = 1:size(featuresFileNames,1)
-    
-    [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-        accuracyPerFeat(pairIdx,:)] = ...
-        performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
-        featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
-        pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
-        vggFFileNames(pairIdx,:), ...
-        T, knn, Wdims);
-end
-meanAccuracy = mean(accuracyMNRML);
-
+idx = 1;
+%range = 17:38;%20:40;
+perc = 0;
+wdims = 27;
+%for wdims = range
+%for K1 = 4:6
+%    for K2 = 2:10
+K1 = 5;
+K2 = 8;
+    for pairIdx = 1:size(featuresFileNames,1)
+            
+            [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
+                accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx)] = ...
+                performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
+                featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
+                pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
+                vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
+                HOGFileNames(pairIdx,:), ...
+                T, knn, perc, K1, K2, wdims);
+            
+        end
+        meanAccuracy(idx) = mean(accuracyMNRML);
+        idx = idx+1;        
+%    end
+%end
+%end
+%plot(mean(numEigVals),meanAccuracy);
+%title('Accuracy/Number eigenvalues');
+%xlabel('Number eigenvalues');
+%ylabel('Accuracy');
 %%% End of classification %%%
 
-function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat] = ...
-    performClassification(...
+function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
+    numEigvals] = performClassification(...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
-    pairIdStr, vggMatFileName, imagenetMatFileName, T, knn, Wdims)
-K = 2;
+    pairIdStr, vggMatFileName, imagenetMatFileName, ...
+    LBPMatFileName, HOGMatFileName, T, knn, eigValPerc, ...
+    K1, K2, wdims)
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
+numEigvals = 0;
 %calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
 % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
 %arrangeDataInPairs(featuresFileName,metadataPair,...
-%    vggMatFileName,imagenetMatFileName);
+%    vggMatFileName,imagenetMatFileName, LBPMatFileName, HOGMatFileName);
 
 load(vggMatFileName);
 fea{1} = ux;
 clear ux idxa idxb fold matches;
 load(imagenetMatFileName);
 fea{2} = ux;
-
+clear ux idxa idxb fold matches;
+load(LBPMatFileName);
+fea{3} = ux;
+clear ux idxa idxb fold matches;
+load(HOGMatFileName);
+fea{4} = ux;
+K = 4; 
 % Classification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
 accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
 
 % Classification on MNRML
-K1 = 5;
-K2 = 10;
-[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+    matches, K, T, knn, eigValPerc, wdims);
+numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta);
 
 % Classification on NRML
-projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
-[mergedFeaTrNRML, mergedFeaTsNRML]= convertEachPairIntoIndividual(projFeaNRML, idxa, idxb, fold, K);
-accuracyNRML = mergedSVMClassification(mergedFeaTrNRML, mergedFeaTsNRML, fold, matches, K, 1/K);
+%Wdims = 30;
+%projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
+%[mergedFeaTrNRML, mergedFeaTsNRML]= convertEachPairIntoIndividual(projFeaNRML, idxa, idxb, fold, K);
+%accuracyNRML = mergedSVMClassification(mergedFeaTrNRML, mergedFeaTsNRML, fold, matches, K, 1/K);
 
 end
