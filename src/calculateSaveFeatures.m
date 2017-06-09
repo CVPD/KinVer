@@ -74,7 +74,7 @@ if isfield(data{1},'LBPFeat') == 0
         gray = rgb2gray(im); % image to grey scale
         
         % Store LBP features
-        data{idx}.LBPFeat = extractLBPFeatures(gray,'NumNeighbors', 16, 'Radius', 2);%gray,'CellSize',[16 16], 'NumNeighbors',4); % 16 as number of neighbors and 2 as radius
+        data{idx}.LBPFeat = extractLBPFeatures(gray,'NumNeighbors', 16, 'Radius', 4);
     end
 end
 
@@ -87,7 +87,7 @@ if isfield(data{1},'HOGFeat') == 0
         gray = rgb2gray(im); % image to grey scale
         
         % Store HOG features
-        data{idx}.HOGFeat = extractHOGFeatures(gray, 'CellSize', [19 19], 'NumBins', 12); % cell size of 19x19 and 12 bins
+        data{idx}.HOGFeat = extractHOGFeatures(gray, 'CellSize', [15 15], 'NumBins', 13); % cell size of 19x19 and 12 bins
     end
 end
 
