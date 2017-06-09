@@ -49,13 +49,19 @@ for c = 1:nfold
         X = fea{p};
         tr_Xa = X(tr_idxa, :);                    % training data
         tr_Xb = X(tr_idxb, :);                    % training data
-        [eigvec, ~, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
-        X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
         
-        N = size(X, 1);
-        for i = 1:N
-            X(i, :) = X(i, :) / norm(X(i, :));
-        end
+        
+     Wdims = 200;%calculateMaxWdim(tr_Xa_pos,K);   
+        %[eigvec, ~, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
+        %X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
+        
+        %N = size(X, 1);
+        %for i = 1:N
+        %   X(i, :) = X(i, :) / norm(X(i, :));
+        %end         
+        
+        
+        
         tr_Xa_pos{p} = X(tr_idxa(tr_matches), :); % positive training data
         tr_Xb_pos{p} = X(tr_idxb(tr_matches), :); % positive training data
         ts_Xa{p} = X(ts_idxa, :);                 % testing data
@@ -64,6 +70,7 @@ for c = 1:nfold
         clear X;
     end
     %% MNRML
+    %Wdims = calculateMaxWdim(tr_Xa_pos,K);
     [W{c}, beta{c}] = mnrml_train(tr_Xa_pos, tr_Xb_pos, knn, Wdims, T);
     
     for p = 1:K
@@ -108,6 +115,16 @@ for c = 1:nfold
         if Wdims > maxWdims
             maxWdims = Wdims;
         end
+    end
+end
+end
+
+function maxWdim = calculateMaxWdim(fea,K)
+maxWdim = inf;
+for featId = 1:K
+    curWdim = size(fea{featId},2);
+    if (curWdim < maxWdim)
+        maxWdim = curWdim;
     end
 end
 end
