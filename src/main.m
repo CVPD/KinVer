@@ -51,12 +51,12 @@ range = 5:5:wdims;%20:40;
 if isempty(find(range==wdims))
     range(length(range)+1) = wdims;
 end
-
-for sizeSVM = range
+sizeSVM = -1;
+%for sizeSVM = range
     for pairIdx = 1:size(featuresFileNames,1)
         
         [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-            accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx)] = ...
+            accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
             performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
             featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
             pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
@@ -66,8 +66,9 @@ for sizeSVM = range
         
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
+    betaMeans(idx,:) = mean(betaPerFeat,1);
     idx = idx+1;
-end
+%end
 %    end
 %end
 %end
@@ -82,7 +83,7 @@ ylabel('Accuracy');
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
-    numEigvals] = performClassification(...
+    numEigvals, betaMeans] = performClassification(...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, ...
     LBPMatFileName, HOGMatFileName, T, knn, eigValPerc, ...
@@ -111,9 +112,16 @@ accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
 accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
 
+un = unique(fold);
+nfold = length(un);
+
 % Classification on MNRML
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
+betasVec = cell2mat(projBeta);
+betasMat = transpose(reshape(betasVec,[K nfold]));
+betaMeans = mean(betasMat,1);
+
 numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
