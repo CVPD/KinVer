@@ -37,20 +37,20 @@ end
 T = 4;
 knn = 6;
 idx = 1;
-%range = 17:38;%20:40;
+range = 5:1:200;%20:40;
 perc = 0;
-wdims = 27;
-%for wdims = range
+%wdims = 27;
+for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
 K1 = 5;
 K2 = 8;
-range = 5:5:wdims;%20:40;
+%range = 5:5:wdims;%20:40;
 
 % Add wdims if it is not in the range
-if isempty(find(range==wdims))
-    range(length(range)+1) = wdims;
-end
+%if isempty(find(range==wdims))
+%    range(length(range)+1) = wdims;
+%end
 sizeSVM = -1;
 %for sizeSVM = range
     for pairIdx = 1:size(featuresFileNames,1)
@@ -66,20 +66,22 @@ sizeSVM = -1;
         
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
+    accuracyMNRMLIdx(idx,:) = accuracyMNRML;
     betaMeans(idx,:) = mean(betaPerFeat,1);
     idx = idx+1;
-%end
+end
 %    end
 %end
 %end
-%plot(mean(numEigVals),meanAccuracy);
-%title('Accuracy/Number eigenvalues');
-%xlabel('Number eigenvalues');
-%ylabel('Accuracy');
-plot(range,meanAccuracy);
-title('Accuracy/LDE vector dim');
-xlabel('LDE vector dim');
+plot(range,accuracyMNRMLIdx);
+title('Accuracy/PCA dimension');
+xlabel('PCA dimension');
 ylabel('Accuracy');
+legend(pairIdStrs);
+%plot(range,meanAccuracy);
+%title('Accuracy/LDE vector dim');
+%xlabel('LDE vector dim');
+%ylabel('Accuracy');
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
