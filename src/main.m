@@ -100,13 +100,7 @@ fea{1} = ux;
 clear ux idxa idxb fold matches;
 load(imagenetMatFileName);
 fea{2} = ux;
-clear ux idxa idxb fold matches;
-load(LBPMatFileName);
-fea{3} = ux;
-clear ux idxa idxb fold matches;
-load(HOGMatFileName);
-fea{4} = ux;
-K = 4;
+K = 2;
 % Classification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
