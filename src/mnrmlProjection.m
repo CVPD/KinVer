@@ -44,14 +44,20 @@ for c = 1:nfold
     ts_idxb = idxb(testMask);
     ts_matches = matches(testMask);
     
+    Wdims = calculateMaxWdim(fea,K);
+    
     %% do PCA  on training data
     for p = 1:K
         X = fea{p};
+        dimFea = size(X,2);
+        if (dimFea < Wdims)
+            X(:,dimFea+1:Wdims) = 0;
+        end
         tr_Xa = X(tr_idxa, :);                    % training data
         tr_Xb = X(tr_idxb, :);                    % training data
         
         
-     Wdims = 200;%calculateMaxWdim(tr_Xa_pos,K);   
+           
         %[eigvec, ~, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
         %X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
         
@@ -119,11 +125,21 @@ for c = 1:nfold
 end
 end
 
-function maxWdim = calculateMaxWdim(fea,K)
-maxWdim = inf;
+function minWdim = calculateMinWdim(fea,K)
+minWdim = inf;
 for featId = 1:K
     curWdim = size(fea{featId},2);
-    if (curWdim < maxWdim)
+    if (curWdim < minWdim)
+        minWdim = curWdim;
+    end
+end
+end
+
+function maxWdim = calculateMaxWdim(fea,K)
+maxWdim = 0;
+for featId = 1:K
+    curWdim = size(fea{featId},2);
+    if (curWdim > maxWdim)
         maxWdim = curWdim;
     end
 end

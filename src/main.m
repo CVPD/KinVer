@@ -53,7 +53,7 @@ if isempty(find(range==wdims))
 end
 sizeSVM = -1;
 %for sizeSVM = range
-    for pairIdx = 1:size(featuresFileNames,1)
+    for pairIdx = 1:1%size(featuresFileNames,1)
         
         [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
             accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
