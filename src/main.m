@@ -118,19 +118,20 @@ nfold = length(un);
 % Classification on MNRML
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
-betasVec = cell2mat(projBeta);
-betasMat = transpose(reshape(betasVec,[K nfold]));
-betaMeans = mean(betasMat,1);
+%betasVec = cell2mat(projBeta);
+%betasMat = transpose(reshape(betasVec,[K nfold]));
+%betaMeans = mean(betasMat,1);
 
-numEigvals = size(projFea{1}{1},2); % Wdims
+%numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
 [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
-accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta, sizeSVM);
+accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, 1/K, sizeSVM);
 
 % Classification on NRML
 %Wdims = 30;
 %projFeaNRML = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims);
 %[mergedFeaTrNRML, mergedFeaTsNRML]= convertEachPairIntoIndividual(projFeaNRML, idxa, idxb, fold, K);
 %accuracyNRML = mergedSVMClassification(mergedFeaTrNRML, mergedFeaTsNRML, fold, matches, K, 1/K);
+betaMeans = 0;
 
 end

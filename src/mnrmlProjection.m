@@ -64,10 +64,11 @@ for c = 1:nfold
         clear X;
     end
     %% MNRML
-    [W{c}, beta{c}] = mnrml_train(tr_Xa_pos, tr_Xb_pos, knn, Wdims, T);
-    
+    %[W{c}, beta{c}] = mnrml_train(tr_Xa_pos, tr_Xb_pos, knn, Wdims, T);
+    W = 0;
+    beta = 0;
     for p = 1:K
-        projFea{c}{p} = feaPCA{p} * W{c};
+        projFea{c}{p} = feaPCA{p};% * W{c};
     end
     
     clear feaPCA; % Until here, OK (to test:   a=projFea{1}{1}(ts_idxa,:);  )
