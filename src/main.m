@@ -53,7 +53,7 @@ if isempty(find(range==wdims))
 end
 sizeSVM = -1;
 %for sizeSVM = range
-    for pairIdx = 1:1%size(featuresFileNames,1)
+    for pairIdx = 1:size(featuresFileNames,1)
         
         [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
             accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
@@ -124,7 +124,7 @@ betaMeans = mean(betasMat,1);
 
 numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
-[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
+%[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta, sizeSVM);
 
 % Classification on NRML
