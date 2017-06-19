@@ -24,6 +24,8 @@ for c = 1%:nfold
         tr_Xc = mergePairsInMatrix(tr_Xa, tr_Xb);
   
         numF = size(tr_Xc,2);
+        tr_matches = tr_matches + 0; % turn into double
+        tr_matches(tr_matches==0,:) = -1;
         ranking = spider_wrapper(tr_Xc,tr_matches,numF,'fisher');
         
         numSelectedFeats = round(numF*numSelect);
