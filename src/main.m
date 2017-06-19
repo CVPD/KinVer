@@ -39,8 +39,8 @@ knn = 6;
 idx = 1;
 range = 17:38;%20:40;
 perc = 0;
-%wdims = [26 43 39 37];
-for wdims = range
+wdims = [26 43 39 37];
+%for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
 K1 = 5;
@@ -69,7 +69,7 @@ sizeSVM = -1;
     betaMeans(idx,:) = mean(betaPerFeat,1);
     accuracyMNRMLIdx(idx,:) = accuracyMNRML;
     idx = idx+1;
-end
+%end
 %    end
 %end
 %end
@@ -117,7 +117,8 @@ un = unique(fold);
 nfold = length(un);
 
 % Classification on MNRML
-fea = feaSelectionVariance(fea, K);
+fea = feaSelectionFisher(fea, idxa, idxb, fold, ...
+    matches, K, 0.5);%feaSelectionVariance(fea, K);
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
 betasVec = cell2mat(projBeta);
