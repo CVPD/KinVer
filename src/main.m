@@ -37,9 +37,9 @@ end
 T = 4;
 knn = 6;
 idx = 1;
-range = 17:38;%20:40;
+range = 15:70;%20:40;
 perc = 0;
-wdims = [26 43 39 37];
+wdims =[37 36 64 54];% [26 43 39 37];
 %for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
@@ -62,7 +62,7 @@ sizeSVM = -1;
             pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
             vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
             HOGFileNames(pairIdx,:), ...
-            T, knn, perc, K1, K2, wdims,sizeSVM);
+            T, knn, perc, K1, K2, wdims(pairIdx),sizeSVM);%wdims(pairIdx),sizeSVM);
         
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
@@ -101,13 +101,13 @@ fea{1} = ux;
 clear ux idxa idxb fold matches;
 load(imagenetMatFileName);
 fea{2} = ux;
-clear ux idxa idxb fold matches;
-load(LBPMatFileName);
-fea{3} = ux;
-clear ux idxa idxb fold matches;
-load(HOGMatFileName);
-fea{4} = ux;
-K = 4;
+%clear ux idxa idxb fold matches;
+%load(LBPMatFileName);
+%fea{3} = ux;
+%clear ux idxa idxb fold matches;
+%load(HOGMatFileName);
+%fea{4} = ux;
+K = 2;
 % Classification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
@@ -117,8 +117,8 @@ un = unique(fold);
 nfold = length(un);
 
 % Classification on MNRML
-fea = feaSelectionFisher(fea, idxa, idxb, fold, ...
-    matches, K, 0.5);%feaSelectionVariance(fea, K);
+fea = feaSelectionFisherConcat(fea, idxa, idxb, fold, ...
+    matches, K, 0.1);%feaSelectionVariance(fea, K);
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
 betasVec = cell2mat(projBeta);
@@ -127,7 +127,7 @@ betaMeans = mean(betasMat,1);
 
 numEigvals = size(projFea{1}{1},2); % Wdims
 [mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
-[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
+%[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta, sizeSVM);
 
 % Classification on NRML
