@@ -34,42 +34,51 @@ end
 %%% End of variables initialization %%%
 
 %% Classification
-T = 4;
-knn = 6;
+rangeFisherDimOuter = 0.1;
+rangeFisherDimInner = [0.5 0.4 0.3 0.2 0.1 0.075 0.05 0.025];
 idx = 1;
-range = 15:70;%20:40;
-perc = 0;
-wdims =[37 36 64 54];% [26 43 39 37];
-%for wdims = range
-%for K1 = 4:6
-%    for K2 = 2:10
-K1 = 5;
-K2 = 8;
-%range = 5:5:wdims;%20:40;
-
-% Add wdims if it is not in the range
-%if isempty(find(range==wdims))
-%    range(length(range)+1) = wdims;
-%end
-sizeSVM = -1;
-%for sizeSVM = range
-    for pairIdx = 1:size(featuresFileNames,1)
+for selDimFea1 = rangeFisherDimOuter
+    for selDimFea2 = rangeFisherDimInner
+        T = 4;
+        knn = 6;
         
-        [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
-            accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
-            performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
-            featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
-            pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
-            vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
-            HOGFileNames(pairIdx,:), ...
-            T, knn, perc, K1, K2, wdims(pairIdx),sizeSVM);%wdims(pairIdx),sizeSVM);
+        rangeWdims = 15:70;%20:40;
+        perc = 0;
+        %wdims =[59 47 60 47];% [26 43 39 37];
         
+        for wdims = rangeWdims
+            %for K1 = 4:6
+            %    for K2 = 2:10
+            K1 = 5;
+            K2 = 8;
+            %range = 5:5:wdims;%20:40;
+            
+            % Add wdims if it is not in the range
+            %if isempty(find(range==wdims))
+            %    range(length(range)+1) = wdims;
+            %end
+            sizeSVM = -1;
+            %for sizeSVM = range
+            for pairIdx = 1:size(featuresFileNames,1)
+                
+                [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
+                    accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
+                    performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
+                    featuresFileNames(pairIdx,:), metadataPairs(pairIdx,:), ...
+                    pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
+                    vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
+                    HOGFileNames(pairIdx,:), ...
+                    T, knn, perc, K1, K2, wdims,sizeSVM,[selDimFea1 selDimFea2]);%wdims(pairIdx),sizeSVM);
+                
+            end
+            meanAccuracy(idx) = mean(accuracyMNRML);
+            betaMeans(idx,:) = mean(betaPerFeat,1);
+            accuracyMNRMLIdx(idx,:) = accuracyMNRML;
+            idx = idx+1;
+        end
+        idx = idx + 1;
     end
-    meanAccuracy(idx) = mean(accuracyMNRML);
-    betaMeans(idx,:) = mean(betaPerFeat,1);
-    accuracyMNRMLIdx(idx,:) = accuracyMNRML;
-    idx = idx+1;
-%end
+end
 %    end
 %end
 %end
@@ -88,7 +97,7 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, ...
     LBPMatFileName, HOGMatFileName, T, knn, eigValPerc, ...
-    K1, K2, wdims, sizeSVM)
+    K1, K2, wdims, sizeSVM,feaSelectionDims)
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 numEigvals = 0;
 %calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
@@ -108,7 +117,7 @@ fea{2} = ux;
 %load(HOGMatFileName);
 %fea{4} = ux;
 K = 2;
-% Classification on original features
+% Clas  sification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
 accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
@@ -117,8 +126,8 @@ un = unique(fold);
 nfold = length(un);
 
 % Classification on MNRML
-fea = feaSelectionFisherConcat(fea, idxa, idxb, fold, ...
-    matches, K, 0.1);%feaSelectionVariance(fea, K);
+fea = feaSelectionFisherMerge(fea, idxa, idxb, fold, ...
+    matches, K, feaSelectionDims);%feaSelectionVariance(fea, K);
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
 betasVec = cell2mat(projBeta);

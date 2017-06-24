@@ -28,7 +28,7 @@ for c = 1%:nfold
         tr_matches(tr_matches==0,:) = -1;
         ranking = spider_wrapper(tr_Xc,tr_matches,numF,'fisher');
         
-        numSelectedFeats = round(numF*numSelect);
+        numSelectedFeats = round(numF*numSelect(p));
         X = X(:,ranking(1:numSelectedFeats));
         fea{p} = X;
         clear X;
