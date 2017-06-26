@@ -34,7 +34,7 @@ end
 %%% End of variables initialization %%%
 
 %% Classification
-rangeFisherDimOuter = 0.1;
+rangeFisherDimOuter = [0.5 0.4 0.3 0.2 0.1 0.075 0.05 0.025];
 rangeFisherDimInner = [0.5 0.4 0.3 0.2 0.1 0.075 0.05 0.025];
 idx = 1;
 for selDimFea1 = rangeFisherDimOuter
