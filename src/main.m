@@ -39,9 +39,9 @@ knn = 6;
 idx = 1;
 range = 15:70;%20:40;
 perc = 0;
-%wdims=[60 69 61 58];
-fisherDim=0.1%[0.0750 0.4000;0.0500 0.0500;0.0500 0.0500;0.0750 0.0750];
-for wdims = range
+wdims=[28 70 63 47];
+fisherDim=[0.025 0.1;0.1 0.4;0.5 0.05;0.1 0.025];
+%for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
 K1 = 5;
@@ -63,14 +63,14 @@ sizeSVM = -1;
             pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
             vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
             HOGFileNames(pairIdx,:), ...
-            T, knn, perc, K1, K2, wdims,sizeSVM,[fisherDim fisherDim]);
+            T, knn, perc, K1, K2, wdims(pairIdx),sizeSVM,fisherDim(pairIdx,:));
         
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
     accuracyMNRMLIdx(idx,:) = accuracyMNRML;
     betaMeans(idx,:) = mean(betaPerFeat,1);
     idx = idx+1;
-end
+%end
 %    end
 %end
 %end
@@ -118,7 +118,7 @@ un = unique(fold);
 nfold = length(un);
 
 % Classification on MNRML
-fea = feaSelectionRescalingFisherFeaMerge(fea, idxa, idxb, fold, ... % feaSelectionFisherMerge
+fea = feaSelectionFisherMerge(fea, idxa, idxb, fold, ... % feaSelectionFisherMerge
     matches, K, feaSelectionDims);%feaSelectionVariance(fea, K);
 [projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
     matches, K, T, knn, eigValPerc, wdims);
