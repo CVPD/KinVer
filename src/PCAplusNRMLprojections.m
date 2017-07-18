@@ -1,15 +1,19 @@
-% function mnrmlSpaceChange(inputFile,outputFile)
+% function projFea = PCAplusNRMLprojections(fea, idxa, idxb, fold, matches, K, T, knn, Wdims)
 %
-% Transforms the input data arranged to perform classification to the MNRML
-% created space.
-% Input: inputFile; data ready to perform classification per fold
-% Input: outputFile; The file name where the input data transformed to the new
-% MNRML space will be stored.
-%% Example of call to the function
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
-% outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
-% mnrmlSpaceChange(inputFile,outputFile);
-function projFea = nrmlProjection(fea, idxa, idxb, fold, matches, K, T, knn, Wdims)
+% Transforms the input data arranged to perform classification to the NRML
+% for all the input features individually.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances.
+% Input: K; number of features.
+% Input: T; Number of iterations for the MNRML projection.
+% Input: knn; Number of neighbours that form a neighborhood for the MNRML projection.
+% Input: Wdims; number of descriptors that are selected after performing PCA projection
+% Output: projFea; original features (fea) projected to PCA and MNRML space.
+function projFea = PCAplusNRMLprojections(fea, idxa, idxb, fold, matches, K, T, knn, Wdims)
 
 disp('mnrml projection started. Folds: ')
 
@@ -19,9 +23,6 @@ un = unique(fold);
 nfold = length(un);
 
 %% NRML
-t_sim = [];
-t_ts_matches = [];
-t_acc = zeros(nfold, 1);
 for c = 1:nfold
     
     % Display number of fold processing

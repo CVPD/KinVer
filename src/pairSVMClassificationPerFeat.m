@@ -1,6 +1,15 @@
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms.mat';
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms_noW.mat';
-% SVMClassification(inputFile);
+% function accuracy = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K)
+%
+% Perform prediction and calculate the accuracy of each SVM (one per feature) classifier.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances.
+% Input: K; number of features
+% Output: accuracy; The accuracy calculated by the prediction on the test
+% data for each classifier (one per feature).
 
 function accuracy = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K)
 

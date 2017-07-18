@@ -1,3 +1,14 @@
+% function arrangeDataInPairs(dataFile,metadataDir,vggFaceFileName,...
+%   vggFFileName, LBPFileName, HOGFileName)
+% 
+% Extracts the features from each kinship type file, creating a file for each feature for each kinship type.
+%
+% Input: dataFile; Origin file name that contains all the features for a kinship relationship
+% Input: metadataDir; metadata directory for that kinship relationship
+% Input: vggFaceFileName; destiny filename for vggFace feature for the origin kinship type
+% Input: vggFFileName; destiny filename for vggF feature for the origin kinship type
+% Input: LBPFileName; destiny filename for LBP feature for the origin kinship type
+% Input: HOGFileName; destiny filename for HOG feature for the origin kinship type
 function arrangeDataInPairs(dataFile,metadataDir,vggFaceFileName,...
     vggFFileName, LBPFileName, HOGFileName)
 

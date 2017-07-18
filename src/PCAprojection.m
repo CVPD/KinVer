@@ -1,14 +1,19 @@
-% function mnrmlSpaceChange(inputFile,outputFile)
+% function projFea = PCAprojection(fea, idxa, idxb, fold, ...
+%    matches, K, eigValPerc, wdims)
 %
-% Transforms the input data arranged to perform classification to the MNRML
-% created space.
-% Input: inputFile; data ready to perform classification per fold
-% Input: outputFile; The file name where the input data transformed to the new
-% MNRML space will be stored.
-%% Example of call to the function
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
-% outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
-% mnrmlSpaceChange(inputFile,outputFile);
+% Transforms the input data arranged to perform classification first with PCA projection and then dimension reduction by cropping to the wdims most important descriptors.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances.
+% Input: K; number of features.
+% Input: wdims and eigValPerc; number of descriptors that are selected after performing
+    % PCA projection. If wdims equals to -1, then it will be calculated
+    % automatically by mutiplying the size of the feature by eigValPerc factor.
+% Output: projFea; original features (fea) projected to PCA and cropped.
+
 function projFea = PCAprojection(fea, idxa, idxb, fold, ...
     matches, K, eigValPerc, wdims)
 

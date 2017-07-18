@@ -1,8 +1,9 @@
+% The main function that obtains results by executing the rest files
 %% Configuration setting
 databaseID = 'KinFaceW-II';
 
 % Calculate features
-performCalculateFeatures = false;
+performCalculateFeatures = true;
 
 % Used features
 useVGGFace = true;
@@ -161,7 +162,7 @@ else
             matches, K, eigValPerc, wdims);
     else
         [fea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
-        matches, K, T, knn, eigValPerc, wdims);
+        matches, K, T, knn);
         betasVec = cell2mat(projBeta);
         betasMat = transpose(reshape(betasVec,[K nfold]));
         betaMeans = mean(betasMat,1);

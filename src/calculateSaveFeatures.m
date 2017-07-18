@@ -1,4 +1,11 @@
-
+% function calculateSaveFeatures(imageDir,convnetDir,outputFileName)
+% 
+% Extracts the features from the images and saves them in a file.
+% Each file contains all the features extracted for a specific kinship relationship
+%
+% Input: imageDir; Directory from where the current kinship relationship's images are loaded
+% Input: convnetDir; directory where the deep networks are stored
+% Input: outputFileName;  destiny file name that contains all the features for a kinship relationship
 function calculateSaveFeatures(imageDir,convnetDir,outputFileName)
 
 %%%%%%%%%%%%%%%% Initialisations %%%%%%%%%%%%%%%%

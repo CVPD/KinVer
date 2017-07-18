@@ -1,6 +1,15 @@
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms.mat';
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms_noW.mat';
-% SVMClassification(inputFile);
+% function accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, beta)
+%
+% Perform prediction and calculate the merged accuracy by weighing the reliability of each SVM (per feature) classifier using the beta coeficient.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances.
+% Input: K; number of features
+% Input: beta; Coeficient that shows the relevance of each feature. Can be one number (the same for all features) or several (in this case there is one per feature and the sum of all must equal 1).
+% Output: accuracy; The accuracy calculated by the prediction on the test data for the blended classifier.
 
 function accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, beta)
 

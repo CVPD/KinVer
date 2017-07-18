@@ -1,7 +1,14 @@
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms.mat';
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms_noW.mat';
-% SVMClassification(inputFile);
-
+% function [mergedFeaTr, mergedFeaTs] = convertEachPairIntoIndividual(fea, idxa, idxb, fold, K)
+%
+% Merges the data that is arranged in parents and children in pairs.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: K; number of features
+% Output: mergedFeaTr; individuals training data (merged pairs features) ready to perform classification per fold
+% Output: mergedFeaTs; individuals testing data (merged pairs features) ready to perform classification per fold
 function [mergedFeaTr, mergedFeaTs] = convertEachPairIntoIndividual(fea, idxa, idxb, fold, K)
 
 un = unique(fold);

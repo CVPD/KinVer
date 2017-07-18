@@ -1,6 +1,17 @@
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms.mat';
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\mnrmlFeat_ms_noW.mat';
-% SVMClassification(inputFile);
+% function accuracy = mergedSVMClassification(mergedFeaTr, mergedFeaTs,
+%   fold, matches, K, beta, sizeSVM)
+%
+% Performs one SVM classifier per feature and then uses the beta value for
+% blending them, creating a blended classifier.
+%
+% Input: mergedFeaTr; individuals training data (merged pairs features) ready to perform classification per fold
+% Input: mergedFeaTs; individuals testing data (merged pairs features) ready to perform classification per fold
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances
+% Input: K; number of features
+% Input: beta; Coeficient that shows the relevance of each feature. Can be one number (the same for all features) or several (in this case there is one per feature and the sum of all must equal 1).
+% Input: sizeSVM; Indicates the number of columns that the SVM uses to perform classification. It is equal to -1, all the columns are taken.
+% Output: accuracy; The accuracy calculated by the prediction on the test data for the blended classifier.
 
 function accuracy = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, beta, sizeSVM)
 

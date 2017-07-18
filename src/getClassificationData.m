@@ -1,6 +1,7 @@
 % function getClassificationData(featFileNamesCell,destFileName)
 %
 % Gets the data ready to perform classification per fold.
+%
 % Input: featFileNamesCell; a cell array that contains the name (full path)
 % of the files in which features are located. One name per cell.
 % Input: destFileName; a string containing the full path of the file to

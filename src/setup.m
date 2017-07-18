@@ -1,3 +1,6 @@
+% File that must be run before the first execution of the main in order to prepare the datasets and libraries.
+% Also the Feature Selection Library must be installed using the link provided by the window created at the execution.
+
 %% KinFace-I and KinFace-II datasets
 oldDir = cd('..');
 mkdir datasets;

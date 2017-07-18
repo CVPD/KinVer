@@ -1,16 +1,22 @@
-% function mnrmlSpaceChange(inputFile,outputFile)
+% function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+%    matches, K, T, knn)
 %
 % Transforms the input data arranged to perform classification to the MNRML
-% created space.
-% Input: inputFile; data ready to perform classification per fold
-% Input: outputFile; The file name where the input data transformed to the new
-% MNRML space will be stored.
-%% Example of call to the function
-% inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
-% outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
-% mnrmlSpaceChange(inputFile,outputFile);
+% created space using all the input features.
+%
+% Input: fea; cell array that contains all the features extracted for all the pairs individuals
+% Input: idxa; pairs' parent indexes. The same row of this vector and idxb's form a pair
+% Input: idxb; pairs' child indexes. The same row of this vector and idxa's form a pair
+% Input: fold; vector that indicates how train and test data are prepared to split in folds 
+% Input: matches; class of the instances.
+% Input: K; number of features.
+% Input: T; Number of iterations for the MNRML projection.
+% Input: knn; Number of neighbours that form a neighborhood for the MNRML projection.
+% Output: projFea; original features (fea) projected to PCA and MNRML space.
+% Output: W; projection matrix created by MNRML.
+% Output: beta; Coeficient that shows the relevance of each feature. It consists on several values (one per feature and the sum of all must equal 1).
 function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
-    matches, K, T, knn, eigValPerc, wdims)
+    matches, K, T, knn)
 
 disp('MNRML projection started. Folds: ')
 
@@ -20,7 +26,6 @@ un = unique(fold);
 nfold = length(un);
 
 %% NRML
-%if wdims == -1
 Wdims = inf;
 for p = 1:K
     newSize = size(fea{p},2);
@@ -28,9 +33,6 @@ for p = 1:K
             Wdims = newSize;
         end
 end
-%else
-%    Wdims = wdims;
-%end
 for c = 1:nfold
     
     % Display number of fold processing

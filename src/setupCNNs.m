@@ -1,4 +1,7 @@
-% Install and compile MatConvNet (needed once).
+% File that when executed prepares the deep networks that can extract deep features.
+% This step is optional because the features' files are already uploaded to matlab.
+
+%Install and compile MatConvNet (needed once).
 oldDir = cd('..');
 untar('http://www.vlfeat.org/matconvnet/download/matconvnet-1.0-beta23.tar.gz',...
     'matconvnet') ;

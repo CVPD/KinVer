@@ -1,3 +1,10 @@
+% function cosineROCPlot(dataFile,metadataDir,pairIdStr)
+% 
+% Plots a ROC curve for each feature and each kinship relationship
+%
+% Input: dataFile; Origin file name that contains all the features for a kinship relationship
+% Input: metadataDir; metadata directory for that kinship relationship
+% Input: pairIdStr; the current kinship relationship's pair ID
 function cosineROCPlot(dataFile,metadataDir,pairIdStr)
 
 load(dataFile);
