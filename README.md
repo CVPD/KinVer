@@ -31,10 +31,9 @@ The first step is to clone the repository
 git clone https://github.com/oserradilla/KinVer
 ```
 
-(optional) All the features have been extracted from the images and included to the project so they are downloaded when cloning the project. If you want to be able to extract the VGG-Face and VGG-F deep features from the dataset by yourself, run the following file in matlab:
-
+Now run the setup file that adds external data and datasets to the project. Also download Matlab's feature-selection-library and place it in the external folder as specified when executing the setup file:
 ```
-setupCNNs.m
+setup.m
 ```
 
 Make sure that the project works correctly by executing the following file and comparing it with the following results:
@@ -46,6 +45,11 @@ accuracyMNRML =
     0.8220    0.8660    0.8940    0.8760
 ```
 
+(optional) All the features have been extracted from the images and included to the project so they are downloaded when cloning the project. If you want to be able to extract the VGG-Face and VGG-F deep features from the dataset by yourself, run the following file in matlab:
+
+```
+setupCNNs.m
+```
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/oserradilla/KinVer/tags). 
