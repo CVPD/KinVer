@@ -3,7 +3,7 @@
 databaseID = 'KinFaceW-II';
 
 % Calculate features
-performCalculateFeatures = true;
+performCalculateFeatures = false;
 
 % Used features
 useVGGFace = true;

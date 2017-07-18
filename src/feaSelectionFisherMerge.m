@@ -21,6 +21,7 @@ addpath('./external/fisher/methods'); % FS methods
 un = unique(fold);
 nfold = length(un);
 
+c = 1;% chosen train data is of fold 1
 trainMask = fold ~= c;
 testMask = fold == c;
 tr_idxa = idxa(trainMask);
