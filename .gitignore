@@ -1,2 +1,5 @@
 *.asv
 matconvnet/
+datasets/
+src/external/fisher
+src/external/NRML
