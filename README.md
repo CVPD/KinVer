@@ -31,7 +31,7 @@ The first step is to clone the repository
 git clone https://github.com/oserradilla/KinVer
 ```
 
-Now run the setup file that adds external data and datasets to the project. Also download Matlab's feature-selection-library and place it in the external folder as specified when executing the setup file:
+Now run the setup file that adds external data and datasets to the project. Also download Matlab's feature-selection-library as zip file and extrat all its content into a new folder called fisher inside the path src/external; as specified when executing the setup file:
 ```
 setup.m
 ```
