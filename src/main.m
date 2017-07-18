@@ -1,25 +1,37 @@
 %% Configuration setting
 databaseID = 'KinFaceW-II';
 
+% Calculate features
 performCalculateFeatures = false;
 
-% Features setting
+% Used features
 useVGGFace = true;
 useVGGF = true;
 useLBP = false;
 useHOG = false;
 
-% Pipeline setting
+% Used pipeline blocks
 useFeatureSelection = true;
 usePCA = true;
 useMNRML = true;
 useLDE = false;
 
+% Pipeline blocks configuration
+fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
+wdims=[60 69 61 58];
+perc = 0;
+T = 4;
+knn = 6;
+idx = 1;
+K1 = 5;
+K2 = 8;
+sizeSVM = -1;
+
 %% Computer paths
 % Define KinFaceW database path
-dbDir='C:\Users\windows\Desktop\TFM\datasets';
+dbDir='../datasets';
 % Define matconvnet path
-convnetDir = 'C:\Users\windows\Desktop\TFM\matconvnet-1.0-beta23';
+convnetDir = '../matconvnet';
 
 %% Initialization
 %%% Initialization variables %%%
@@ -49,29 +61,20 @@ end
 
 %%% End of variables initialization %%%
 
-%% Classification
-T = 4;
-knn = 6;
-idx = 1;
-range = 15:70;%20:40;
-perc = 0;
-wdims=[60 69 61 58];
-fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
-%for wdims = range
-%for K1 = 4:6
-%    for K2 = 2:10
-K1 = 5;
-K2 = 8;
-%range = 5:5:wdims;%20:40;
-
-% Add wdims if it is not in the range
-%if isempty(find(range==wdims))
-%    range(length(range)+1) = wdims;
-%end
-sizeSVM = -1;
-%for sizeSVM = range
+%% Feature extraction
+if performCalculateFeatures
     for pairIdx = 1:size(featuresFileNames,1)
-        
+        calculateSaveFeatures(imagePairsDirs(pairIdx,:), convnetDir, ...
+            featuresFileNames(pairIdx,:));
+        % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
+        arrangeDataInPairs(featuresFileNames(pairIdx,:),metadataPairs(pairIdx,:),...
+            vggFaceFileNames(pairIdx,:), vggFFileNames(pairIdx,:), ...
+            LBPFileNames(pairIdx,:), HOGFileNames(pairIdx,:));
+    end
+end
+
+%% Classification
+    for pairIdx = 1:size(featuresFileNames,1)
         [accuracy(pairIdx),accuracyMNRML(pairIdx),accuracyNRML(pairIdx), ...
             accuracyPerFeat(pairIdx,:), numEigVals(pairIdx,idx),betaPerFeat(pairIdx,:)] = ...
             performClassification(imagePairsDirs(pairIdx,:), convnetDir, ...
@@ -83,24 +86,12 @@ sizeSVM = -1;
             performCalculateFeatures, ...
             useVGGFace, useVGGF, useLBP, useHOG, ...
             useFeatureSelection, usePCA, useMNRML, useLDE);
-        
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
     accuracyMNRMLIdx(idx,:) = accuracyMNRML;
     betaMeans(idx,:) = mean(betaPerFeat,1);
     idx = idx+1;
-%end
-%    end
-%end
-%end
-%plot(mean(numEigVals),meanAccuracy);
-%title('Accuracy/Number eigenvalues');
-%xlabel('Number eigenvalues');
-%ylabel('Accuracy');
-%plot(range,meanAccuracy);
-%title('Accuracy/LDE vector dim');
-%xlabel('LDE vector dim');
-%ylabel('Accuracy');
+
 %%% End of classification %%%
 
 function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
@@ -113,13 +104,6 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
     useFeatureSelection, usePCAprojection, useMNRMLprojection, useLDEprojection)
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 numEigvals = 0;
-
-if performCalculateFeatures
-    calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
-    arrangeDataInPairs(featuresFileName,metadataPair,...
-        vggMatFileName,imagenetMatFileName, LBPMatFileName, HOGMatFileName);
-end
-% cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
 
 numFeats = 0;
 if useVGGFace

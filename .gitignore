@@ -1,3 +1,2 @@
-data/
-src/external
 *.asv
+matconvnet/
