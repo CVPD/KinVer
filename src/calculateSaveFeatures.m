@@ -17,7 +17,7 @@ cd(oldFolder);
 imageNames = dir(strcat(imageDir,'/*.jpg'));
 numImages = length(imageNames);
 
-if exist('plot.m', 'file') == 2 % If file exists load, else initialise
+if exist(outputFileName, 'file') == 2 % If file exists load, else initialise
     load(outputFileName,'data');
 else
     data = cell(numImages,1);
@@ -34,6 +34,7 @@ if isfield(data{1},'name') == 0
     end
 end
 % Save vgg features if do not exist
+tic()
 if isfield(data{1},'vggFaceFeat') == 0
     for idx = 1:numImages
         imageFullPath = strcat(imageDir,'/',data{idx}.name);
@@ -64,6 +65,7 @@ if isfield(data{1},'vggFFeat') == 0
         data{idx}.vggFFeat = gather(res(end-2).x);
     end
 end
+toc()
 
 % Save LBP features if do not exist
 if isfield(data{1},'LBPFeat') == 0
@@ -92,5 +94,7 @@ if isfield(data{1},'HOGFeat') == 0
 end
 
 save(outputFileName,'data');
+
+clear data;
 
 end

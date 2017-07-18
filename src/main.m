@@ -1,13 +1,29 @@
-%% Initialization
-%clear all;
-%%% PC specific %%%
-% Define KinFaceW database path
-dbDir='C:\Users\oscar\Desktop\TFM\datasets\KinFaceW-I';
-% Define matconvnet path
-convnetDir = 'C:\Users\oscar\Desktop\TFM\matconvnet-1.0-beta23';
-%%% End PC specific %%%
+%% Configuration setting
+databaseID = 'KinFaceW-II';
 
+performCalculateFeatures = false;
+
+% Features setting
+useVGGFace = true;
+useVGGF = true;
+useLBP = false;
+useHOG = false;
+
+% Pipeline setting
+useFeatureSelection = true;
+usePCA = true;
+useMNRML = true;
+useLDE = false;
+
+%% Computer paths
+% Define KinFaceW database path
+dbDir='C:\Users\windows\Desktop\TFM\datasets';
+% Define matconvnet path
+convnetDir = 'C:\Users\windows\Desktop\TFM\matconvnet-1.0-beta23';
+
+%% Initialization
 %%% Initialization variables %%%
+strcat(dbDir,'/',databaseID)
 % Database specific (configured for KinFaceW-I and KinFaceW-II
 metadataDir = strcat(dbDir,'/','meta_data');
 imagePairsDirs = ['father-dau';'father-son';'mother-dau';'mother-son'];
@@ -17,7 +33,7 @@ metadataPairs = strcat(metadataDir,'/',pairIdStrs,'_pairs.mat');
 
 % Names of the files created by these scripts
 parentDir = cd(cd('..'));
-createdDataDir = strcat(parentDir,'/','data');
+createdDataDir = strcat(parentDir,'/','data','/','data-',databaseID);
 featuresFileNames = strcat(createdDataDir,'/',pairIdStrs,'-features.mat');
 vggFaceFileNames = strcat(createdDataDir,'/','vggFace_',pairIdStrs,'.mat');
 vggFFileNames = strcat(createdDataDir,'/','vggF_',pairIdStrs,'.mat');
@@ -39,8 +55,8 @@ knn = 6;
 idx = 1;
 range = 15:70;%20:40;
 perc = 0;
-wdims=[28 70 63 47];
-fisherDim=[0.025 0.1;0.1 0.4;0.5 0.05;0.1 0.025];
+wdims=[60 69 61 58];
+fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
 %for wdims = range
 %for K1 = 4:6
 %    for K2 = 2:10
@@ -63,7 +79,10 @@ sizeSVM = -1;
             pairIdStrs(pairIdx,:), vggFaceFileNames(pairIdx,:), ...
             vggFFileNames(pairIdx,:), LBPFileNames(pairIdx,:), ...
             HOGFileNames(pairIdx,:), ...
-            T, knn, perc, K1, K2, wdims(pairIdx),sizeSVM,fisherDim(pairIdx,:));
+            T, knn, perc, K1, K2, wdims(pairIdx),sizeSVM,fisherDim(pairIdx,:),...
+            performCalculateFeatures, ...
+            useVGGFace, useVGGF, useLBP, useHOG, ...
+            useFeatureSelection, usePCA, useMNRML, useLDE);
         
     end
     meanAccuracy(idx) = mean(accuracyMNRML);
@@ -89,46 +108,89 @@ function [accuracy, accuracyMNRML, accuracyNRML, accuracyPerFeat, ...
     imagePairsDir, convnetDir, featuresFileName, metadataPair, ...
     pairIdStr, vggMatFileName, imagenetMatFileName, ...
     LBPMatFileName, HOGMatFileName, T, knn, eigValPerc, ...
-    K1, K2, wdims, sizeSVM,feaSelectionDims)
+    K1, K2, wdims, sizeSVM,feaSelectionDims, performCalculateFeatures, ...
+    useVGGFace, useVGGF, useLBP, useHOG, ...
+    useFeatureSelection, usePCAprojection, useMNRMLprojection, useLDEprojection)
 accuracy = 0; accuracyMNRML = 0; accuracyNRML = 0; accuracyPerFeat = 0;
 numEigvals = 0;
-%calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
+
+if performCalculateFeatures
+    calculateSaveFeatures(imagePairsDir,convnetDir,featuresFileName);
+    arrangeDataInPairs(featuresFileName,metadataPair,...
+        vggMatFileName,imagenetMatFileName, LBPMatFileName, HOGMatFileName);
+end
 % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
-%arrangeDataInPairs(featuresFileName,metadataPair,...
-%    vggMatFileName,imagenetMatFileName, LBPMatFileName, HOGMatFileName);
 
-load(vggMatFileName);
-fea{1} = ux;
-clear ux idxa idxb fold matches;
-load(imagenetMatFileName);
-fea{2} = ux;
-%clear ux idxa idxb fold matches;
-%load(LBPMatFileName);
-%fea{3} = ux;
-%clear ux idxa idxb fold matches;
-%load(HOGMatFileName);
-%fea{4} = ux;
-K = 2;
-% Clas  sification on original features
-accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
+numFeats = 0;
+if useVGGFace
+    clear ux idxa idxb fold matches;
+    load(vggMatFileName);
+    fea{numFeats+1} = ux;
+    numFeats = numFeats + 1;
+end
+if useVGGF
+    clear ux idxa idxb fold matches;
+    load(imagenetMatFileName);
+    fea{numFeats+1} = ux;
+    numFeats = numFeats + 1;
+end
+if useLBP
+    clear ux idxa idxb fold matches;
+    load(LBPMatFileName);
+    fea{numFeats+1} = ux;
+    numFeats = numFeats + 1;
+end
+if useHOG
+    clear ux idxa idxb fold matches;
+    load(HOGMatFileName);
+    fea{numFeats+1} = ux;
+    numFeats = numFeats + 1;
+end
+if numFeats == 0
+    error('number of features must be bigger than 0');
+end
+K = numFeats;
 
-accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
+% Classification on original features
+%accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
+accuracy = 0; accuracyPerFeat = 0;
+%accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
 
 un = unique(fold);
 nfold = length(un);
 
 % Classification on MNRML
-fea = feaSelectionFisherMerge(fea, idxa, idxb, fold, ... % feaSelectionFisherMerge
-    matches, K, feaSelectionDims);%feaSelectionVariance(fea, K);
-[projFea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
-    matches, K, T, knn, eigValPerc, wdims);
-betasVec = cell2mat(projBeta);
-betasMat = transpose(reshape(betasVec,[K nfold]));
-betaMeans = mean(betasMat,1);
+if useFeatureSelection
+    fea = feaSelectionFisherMerge(fea, idxa, idxb, fold, ... % feaSelectionFisherMerge
+        matches, K, feaSelectionDims);%feaSelectionVariance(fea, K);
+end
 
-numEigvals = size(projFea{1}{1},2); % Wdims
-[mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(projFea, idxa, idxb, fold, K);
-%[mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
+if usePCAprojection && useMNRMLprojection
+    [fea, ~, projBeta] = PCAplusMNRMLprojections(fea, idxa, idxb, fold, ...
+        matches, K, T, knn, eigValPerc, wdims);
+    betasVec = cell2mat(projBeta);
+    betasMat = transpose(reshape(betasVec,[K nfold]));
+    betaMeans = mean(betasMat,1);
+else
+    if usePCAprojection
+        fea = mnrmlProjection(fea, idxa, idxb, fold, ...
+            matches, K, eigValPerc, wdims);
+    else
+        [fea, ~, projBeta] = mnrmlProjection(fea, idxa, idxb, fold, ...
+        matches, K, T, knn, eigValPerc, wdims);
+        betasVec = cell2mat(projBeta);
+        betasMat = transpose(reshape(betasVec,[K nfold]));
+        betaMeans = mean(betasMat,1);
+    end    
+end
+
+numEigvals = size(fea{1}{1},2); % Wdims
+[mergedFeaTr, mergedFeaTs]= convertEachPairIntoIndividual(fea, idxa, idxb, fold, K);
+
+if useLDEprojection
+    [mergedFeaTr, mergedFeaTs]=ldeProjection(mergedFeaTr, mergedFeaTs, fold, matches, K, K1, K2);
+end
+
 accuracyMNRML = mergedSVMClassification(mergedFeaTr, mergedFeaTs, fold, matches, K, projBeta, sizeSVM);
 
 % Classification on NRML

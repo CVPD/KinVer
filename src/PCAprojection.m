@@ -9,10 +9,10 @@
 % inputFile = 'C:\Users\oscar\Desktop\TFM\project\data\classification_data_ms.mat.mat';
 % outputFile = strcat(inputFile(1:length(classificationDataFileName)-4),'_mnrml.mat');
 % mnrmlSpaceChange(inputFile,outputFile);
-function [projFea,W,beta] = mnrmlProjection(fea, idxa, idxb, fold, ...
-    matches, K, T, knn, eigValPerc, wdims)
+function projFea = PCAprojection(fea, idxa, idxb, fold, ...
+    matches, K, eigValPerc, wdims)
 
-disp('MNRML projection started. Folds: ')
+disp('PCA projection started. Folds: ')
 
 addpath('external/NRML/nrml');
 
@@ -20,17 +20,11 @@ un = unique(fold);
 nfold = length(un);
 
 %% NRML
-%if wdims == -1
-Wdims = inf;
-for p = 1:K
-    newSize = size(fea{p},2);
-        if newSize < Wdims
-            Wdims = newSize;
-        end
+if wdims == -1
+    Wdims = calculateWdims(eigValPerc, fea, idxa, idxb, fold, K);
+else
+    Wdims = wdims;
 end
-%else
-%    Wdims = wdims;
-%end
 for c = 1:nfold
     
     % Display number of fold processing
@@ -39,31 +33,30 @@ for c = 1:nfold
     disp('')
     
     trainMask = fold ~= c;
-    testMask = fold == c;
     tr_idxa = idxa(trainMask);
     tr_idxb = idxb(trainMask);
-    tr_matches = matches(trainMask);
     
     %% do PCA  on training data
     for p = 1:K
         X = fea{p};
-        tr_Xa_pos{p} = X(tr_idxa(tr_matches), 1:Wdims); % positive training data
-        tr_Xb_pos{p} = X(tr_idxb(tr_matches), 1:Wdims); % positive training data
+        tr_Xa = X(tr_idxa, :);                    % training data
+        tr_Xb = X(tr_idxb, :);                    % training data
+        [eigvec, ~, ~, sampleMean] = PCA([tr_Xa; tr_Xb]);
+        X = (bsxfun(@minus, X, sampleMean) * eigvec(:, 1:Wdims));
+        
+        N = size(X, 1);
+        for i = 1:N
+            X(i, :) = X(i, :) / norm(X(i, :));
+        end
         feaPCA{p} = X;
         clear X;
     end
-    %% MNRML
-    [W{c}, beta{c}] = mnrml_train(tr_Xa_pos, tr_Xb_pos, knn, Wdims, T);
-    
     for p = 1:K
-        projFea{c}{p} = feaPCA{p}(:,1:Wdims) * W{c};
+        projFea{c}{p} = feaPCA{p};
     end
-    
-    clear feaPCA;
 end
 
-disp('MNRML projection finished')
-
+disp('PCA projection finished')
 
 end
 

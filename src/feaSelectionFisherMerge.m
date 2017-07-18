@@ -29,9 +29,11 @@ for c = 1%:nfold
         ranking = spider_wrapper(tr_Xc,tr_matches,numF,'fisher');
         
         numSelectedFeats = round(numF*numSelect(p));
-        X = X(:,ranking(1:numSelectedFeats));
-        fea{p} = X;
-        clear X;
+        if numSelectedFeats > 49
+            X = X(:,ranking(1:numSelectedFeats));
+            fea{p} = X;
+            clear X;
+        end
     end
 end
 
