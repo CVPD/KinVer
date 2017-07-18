@@ -14,5 +14,5 @@ oldDir = cd('external');
 % MNRML code
 unzip('http://www.kinfacew.com/codes/NRML.zip');
 cd(oldDir);
-message = 'Setup done. Only left to add the Matlab's feature selection library that performs fisher feature selection. To install it, first download the zip file from this url https://es.mathworks.com/matlabcentral/fileexchange/56937-feature-selection-library and then extract its content into a new folder called "fisher" created into the path src/external';
+message = 'Setup done. Only left to add the Matlabs feature selection library that performs fisher feature selection. To install it, first download the zip file from this url https://es.mathworks.com/matlabcentral/fileexchange/56937-feature-selection-library and then extract its content into a new folder called "fisher" created into the path src/external';
 msgbox(message)
