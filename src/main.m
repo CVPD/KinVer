@@ -36,7 +36,7 @@ convnetDir = '../matconvnet';
 
 %% Initialization
 %%% Initialization variables %%%
-strcat(dbDir,'/',databaseID)
+dbDir = strcat(dbDir,'/',databaseID);
 % Database specific (configured for KinFaceW-I and KinFaceW-II
 metadataDir = strcat(dbDir,'/','meta_data');
 imagePairsDirs = ['father-dau';'father-son';'mother-dau';'mother-son'];
