@@ -6,7 +6,8 @@
 % Input: imageDir; Directory from where the current kinship relationship's images are loaded
 % Input: convnetDir; directory where the deep networks are stored
 % Input: outputFileName;  destiny file name that contains all the features for a kinship relationship
-function calculateSaveFeatures(imageDir,convnetDir,outputFileName)
+% Output: data; cell array containing the feature vectors
+function [data] = calculateSaveFeatures(imageDir,convnetDir,outputFileName)
 
 %%%%%%%%%%%%%%%% Initialisations %%%%%%%%%%%%%%%%
 
@@ -102,7 +103,5 @@ if isfield(data{1},'HOGFeat') == 0
 end
 
 save(outputFileName,'data');
-
-clear data;
-
+disp( ['Save feature data as ' outputFileName] );
 end
