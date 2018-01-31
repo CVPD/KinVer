@@ -24,8 +24,7 @@ cd(oldFolder);
 
 imageNames = dir(strcat(imageDir,'/*.jpg'));
 numImages = length(imageNames);
-disp( ['number of images: ' num2str(numImages)] );
-disp( ['output file name: ' outputFileName] );
+
 if exist(outputFileName, 'file') == 2 % If file exists load, else initialise
     load(outputFileName,'data');
 else
@@ -45,6 +44,7 @@ end
 % Save vgg features if do not exist
 tic()
 if isfield(data{1},'vggFaceFeat') == 0
+    disp( 'Calculating VGG-Face features...' );
     for idx = 1:numImages
         imageFullPath = strcat(imageDir,'/',data{idx}.name);
         % Pre-processing
@@ -61,6 +61,7 @@ end
 
 % Save vggF features if do not exist
 if isfield(data{1},'vggFFeat') == 0
+    disp( 'Calculating VGG-F features...' );
     for idx = 1:numImages
         imageFullPath = strcat(imageDir,'/',data{idx}.name);
         % Pre-processing
@@ -78,6 +79,7 @@ toc()
 
 % Save LBP features if do not exist
 if isfield(data{1},'LBPFeat') == 0
+    disp( 'Calculating LBP features...' );
     for idx = 1:numImages
         imageFullPath = strcat(imageDir,'/',data{idx}.name);
         % Pre-processing
@@ -91,6 +93,7 @@ end
 
 % Save HOG features if do not exist
 if isfield(data{1},'HOGFeat') == 0
+    disp( 'Calculating HOG features...' );
     for idx = 1:numImages
         imageFullPath = strcat(imageDir,'/',data{idx}.name);
         % Pre-processing
