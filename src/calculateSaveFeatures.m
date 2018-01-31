@@ -23,7 +23,8 @@ cd(oldFolder);
 
 imageNames = dir(strcat(imageDir,'/*.jpg'));
 numImages = length(imageNames);
-
+disp( ['number of images: ' num2str(numImages)] );
+disp( ['output file name: ' outputFileName] );
 if exist(outputFileName, 'file') == 2 % If file exists load, else initialise
     load(outputFileName,'data');
 else
