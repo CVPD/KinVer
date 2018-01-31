@@ -12,7 +12,7 @@
 function arrangeDataInPairs( data, metadataDir,vggFaceFileName,...
     vggFFileName, LBPFileName, HOGFileName)
 
-load(metadataDir);
+load(metadataDir, 'pairs');
 
 names = cell(length(data),1);
 for idx = 1:length(data)
