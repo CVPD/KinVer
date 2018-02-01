@@ -18,8 +18,18 @@ useMNRML = true;
 useLDE = false;
 
 % Pipeline blocks configuration
+% Fisher dimension reduction for KinFaceW-II
 fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
+if strcmp( databaseID, 'KinFaceW-I' ) == 1
+    % Fisher dimension reduction for KinFaceW-I
+    fisherDim = [0.025 0.1; 0.1 0.4; 0.5 0.05; 0.1 0.025 ];
+end
+% PCA dimensions for KinFaceW-II
 wdims=[60 69 61 58];
+if strcmp( databaseID, 'KinFaceW-I' ) == 1
+    % PCA dimensions for KinFaceW-I
+    wdims = [ 28 70 63 47 ];
+end
 perc = 0;
 T = 4;
 knn = 6;
@@ -65,10 +75,10 @@ end
 %% Feature extraction
 if performCalculateFeatures
     for pairIdx = 1:size(featuresFileNames,1)
-        calculateSaveFeatures(imagePairsDirs(pairIdx,:), convnetDir, ...
+        featureData = calculateSaveFeatures(imagePairsDirs(pairIdx,:), convnetDir, ...
             featuresFileNames(pairIdx,:));
         % cosineROCPlot(featuresFileName,metadataPair,pairIdStr);
-        arrangeDataInPairs(featuresFileNames(pairIdx,:),metadataPairs(pairIdx,:),...
+        arrangeDataInPairs( featureData, metadataPairs(pairIdx,:),...
             vggFaceFileNames(pairIdx,:), vggFFileNames(pairIdx,:), ...
             LBPFileNames(pairIdx,:), HOGFileNames(pairIdx,:));
     end
@@ -109,25 +119,25 @@ numEigvals = 0;
 numFeats = 0;
 if useVGGFace
     clear ux idxa idxb fold matches;
-    load(vggMatFileName);
+    load( vggMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
 if useVGGF
     clear ux idxa idxb fold matches;
-    load(imagenetMatFileName);
+    load( imagenetMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
 if useLBP
     clear ux idxa idxb fold matches;
-    load(LBPMatFileName);
+    load( LBPMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
 if useHOG
     clear ux idxa idxb fold matches;
-    load(HOGMatFileName);
+    load( HOGMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
