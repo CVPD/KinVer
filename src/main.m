@@ -19,13 +19,15 @@ useLDE = false;
 
 % Pipeline blocks configuration
 % Fisher dimension reduction for KinFaceW-II
-fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
+%fisherDim=[0.075 0.4; 0.05 0.05; 0.05 0.05; 0.075 0.075];
+fisherDim=[0.4 0.2; 0.1 0.3; 0.075 0.05; 0.3 0.1];
 if strcmp( databaseID, 'KinFaceW-I' ) == 1
     % Fisher dimension reduction for KinFaceW-I
     fisherDim = [0.025 0.1; 0.1 0.4; 0.5 0.05; 0.1 0.025 ];
 end
 % PCA dimensions for KinFaceW-II
-wdims=[60 69 61 58];
+%wdims=[60 69 61 58];
+wdims=[53 58 62 63];
 if strcmp( databaseID, 'KinFaceW-I' ) == 1
     % PCA dimensions for KinFaceW-I
     wdims = [ 28 70 63 47 ];
