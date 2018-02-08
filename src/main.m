@@ -84,8 +84,9 @@ for selDimFea1 = rangeFisherDimOuter
             idx = idx+1;
         end
         tic
-        save('experiment.mat', 'meanAccuracy', 'betaMeans', 'accuracyMNRMLIdx' );
-        disp( 'Saved experiment.mat' );
+        fileName = ['experiment-' databaseID '.mat'];
+        save( fileName', 'meanAccuracy', 'betaMeans', 'accuracyMNRMLIdx' );
+        disp( ['Saved ' fileName] );
         toc
     end
 end
