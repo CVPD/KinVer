@@ -26,7 +26,7 @@ fea{2} = ux;
 %load(HOGMatFileName);
 %fea{4} = ux;
 K = 2;
-% Clas  sification on original features
+% Classification on original features
 accuracy = pairSVMClassification(fea, idxa, idxb, fold, matches, K, 1/K);
 
 accuracyPerFeat = pairSVMClassificationPerFeat(fea, idxa, idxb, fold, matches, K);
