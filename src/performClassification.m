@@ -13,12 +13,20 @@ numFeats = 0;
 if useVGGFace
     clear ux idxa idxb fold matches;
     load( vggMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
+    for kk=1:size( ux,1 )
+        f = ux( kk, : );
+        ux(kk,:) = f / norm( f, 2 );
+    end
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
 if useVGGF
     clear ux idxa idxb fold matches;
     load( imagenetMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
+    for kk=1:size( ux,1 )
+        f = ux( kk, : );
+        ux(kk,:) = f / norm( f, 2 );
+    end
     fea{numFeats+1} = ux;
     numFeats = numFeats + 1;
 end
