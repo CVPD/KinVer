@@ -23,14 +23,14 @@ useLDE = false;
 fisherDim=[0.4 0.2; 0.1 0.3; 0.075 0.05; 0.3 0.1];
 if strcmp( databaseID, 'KinFaceW-I' ) == 1
     % Fisher dimension reduction for KinFaceW-I
-    fisherDim = [0.025 0.1; 0.1 0.4; 0.5 0.05; 0.1 0.025 ];
+    fisherDim = [ .4 .075; .5 .3; .5 .075; .1 .05 ];
 end
 % PCA dimensions for KinFaceW-II
 %wdims=[60 69 61 58];
 wdims=[53 58 62 63];
 if strcmp( databaseID, 'KinFaceW-I' ) == 1
     % PCA dimensions for KinFaceW-I
-    wdims = [ 28 70 63 47 ];
+    wdims = [ 53 59 44 48 ];
 end
 perc = 0;
 T = 4;
