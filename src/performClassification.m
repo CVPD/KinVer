@@ -15,9 +15,17 @@ disp( ['selDim1: ' num2str( feaSelectionDims(1) ) ', selDim2: ' num2str( feaSele
 disp( ['wdims: ' num2str(wdims) ] );
 
 load(vggMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
+for kk=1:size( ux,1 )
+   f = ux( kk, : );
+   ux(kk,:) = f / norm( f, 2 );
+end
 fea{1} = ux;
 clear ux idxa idxb fold matches;
 load(imagenetMatFileName, 'ux', 'idxa', 'idxb', 'fold', 'matches' );
+for kk=1:size( ux,1 )
+   f = ux( kk, : );
+   ux(kk,:) = f / norm( f, 2 );
+end
 fea{2} = ux;
 %clear ux idxa idxb fold matches;
 %load(LBPMatFileName);
