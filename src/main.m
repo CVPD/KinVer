@@ -90,6 +90,19 @@ for selDimFea1 = rangeFisherDimOuter
         toc
     end
 end
+
+% Get best values
+M = zeros(1, size(featuresFileNames,1));
+I = zeros(1, size(featuresFileNames,1));
+for kk=1:size(featuresFileNames,1)
+    [M(kk), I(kk)] = max( accuracyMNRMLIdx(:,kk) ) ;
+end
+% Print parameters of best values
+for kk=1:4
+    [i1, i2, i3] = ind2sub( [length( rangeWdims ) length( rangeFisherDimInner ) length( rangeFisherDimOuter ) ], I(kk) );
+    disp([ 'dim1 = ' num2str( rangeFisherDimOuter( i3 ) ) ', dim2 = ' num2str( rangeFisherDimInner(i2) ) ', wdim = ' num2str( rangeWdims(i1)) ] );
+end
+
 %    end
 %end
 %end
