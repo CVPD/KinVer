@@ -40,9 +40,14 @@ Make sure that the project works correctly by executing the following file and c
 
 ```
 main.m
-
+```
+~~accuracyMNRML =
+    0.8220    0.8660    0.8940    0.8760~~    
+(updated)
+```
 accuracyMNRML =
-    0.8220    0.8660    0.8940    0.8760
+
+    0.8240    0.8720    0.8900    0.8840
 ```
 
 (optional) All the features have been extracted from the images and included to the project so they are downloaded when cloning the project. If you want to be able to extract the VGG-Face and VGG-F deep features from the dataset by yourself, run the following file in matlab:
